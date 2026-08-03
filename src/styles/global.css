@@ -125,18 +125,18 @@ svg {
 
 /* ---------------------------------------------------------------- helpers */
 
-.wrap {
+.ps-shell {
   width: 100%;
   max-width: var(--maxw);
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
 
-.section {
+.ps-section {
   padding-block: clamp(4.5rem, 11vw, 8rem);
 }
 
-.eyebrow {
+.ps-kicker {
   font-size: 0.775rem;
   font-weight: 620;
   letter-spacing: 0.1em;
@@ -145,13 +145,13 @@ svg {
   margin-bottom: 1.1rem;
 }
 
-.lede {
+.ps-lede {
   font-size: clamp(1.06rem, 1.9vw, 1.22rem);
   color: var(--muted);
   max-width: 46ch;
 }
 
-.btn {
+.ps-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -167,38 +167,38 @@ svg {
     background 0.16s ease,
     border-color 0.16s ease;
 }
-.btn:hover {
+.ps-btn:hover {
   transform: translateY(-1px);
 }
-.btn:active {
+.ps-btn:active {
   transform: translateY(0);
 }
 
-.btn-primary {
+.ps-btn-solid {
   background: var(--text);
   color: var(--bg);
 }
-.btn-primary:hover {
+.ps-btn-solid:hover {
   background: color-mix(in oklab, var(--text) 86%, var(--good));
 }
 
-.btn-ghost {
+.ps-btn-ghost {
   border-color: var(--line-strong);
   color: var(--text);
 }
-.btn-ghost:hover {
+.ps-btn-ghost:hover {
   border-color: var(--text);
   background: var(--bg-elev);
 }
 
-.card {
+.ps-point {
   background: var(--bg-elev);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 1.5rem;
 }
 
-.skip {
+.ps-skip {
   position: absolute;
   left: -9999px;
   top: 0;
@@ -207,7 +207,7 @@ svg {
   border-radius: 8px;
   z-index: 100;
 }
-.skip:focus {
+.ps-skip:focus {
   left: 1rem;
   top: 1rem;
 }

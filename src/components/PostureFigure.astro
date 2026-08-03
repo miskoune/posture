@@ -10,26 +10,26 @@
 ---
 
 <div
-  class="stage"
+  class="ps-stage"
   role="img"
   aria-label="A person slouching at a desk, receiving a notification, then sitting up straight."
 >
   <svg viewBox="0 0 340 280" fill="none" aria-hidden="true">
     <!-- desk -->
     <path
-      class="desk"
+      class="ps-desk"
       d="M150 214 H332"
       stroke-width="2.5"
       stroke-linecap="round"></path>
     <path
-      class="desk-leg"
+      class="ps-desk-leg"
       d="M318 214 V246"
       stroke-width="2.5"
       stroke-linecap="round"></path>
 
     <!-- display, with the camera notch the app actually uses -->
     <rect
-      class="screen"
+      class="ps-screen"
       x="228"
       y="150"
       width="86"
@@ -37,35 +37,35 @@
       rx="6"
       stroke-width="2.5"></rect>
     <path
-      class="screen"
+      class="ps-screen"
       d="M258 214 h26"
       stroke-width="2.5"
       stroke-linecap="round"></path>
-    <circle class="lens" cx="271" cy="158" r="2.6"></circle>
+    <circle class="ps-lens" cx="271" cy="158" r="2.6"></circle>
 
     <!-- chair -->
     <path
-      class="chair"
+      class="ps-chair"
       d="M84 216 V250 M84 216 h34"
       stroke-width="2.5"
       stroke-linecap="round"></path>
 
     <!-- the body: hips are fixed, everything above them rotates -->
-    <g class="torso">
+    <g class="ps-torso">
       <path
-        class="spine"
+        class="ps-spine"
         d="M120 216 C116 190 118 166 122 142"
         stroke-width="9"
         stroke-linecap="round"></path>
       <path
-        class="arm"
+        class="ps-arm"
         d="M124 152 C150 160 176 186 206 200"
         stroke-width="7"
         stroke-linecap="round"></path>
-      <g class="head">
-        <circle class="skull" cx="127" cy="118" r="21"></circle>
+      <g class="ps-head">
+        <circle class="ps-skull" cx="127" cy="118" r="21"></circle>
         <path
-          class="neck"
+          class="ps-neck"
           d="M122 142 L126 132"
           stroke-width="8"
           stroke-linecap="round"></path>
@@ -73,12 +73,12 @@
     </g>
 
     <!-- detection ring, pulsing from the camera toward the figure -->
-    <circle class="ping" cx="271" cy="158" r="10" stroke-width="2"></circle>
+    <circle class="ps-scan" cx="271" cy="158" r="10" stroke-width="2"></circle>
   </svg>
 
   <!-- macOS-style banner, timed to the moment the slouch is caught -->
-  <div class="toast">
-    <div class="toast-icon" aria-hidden="true">
+  <div class="ps-nudge">
+    <div class="ps-nudge-icon" aria-hidden="true">
       <svg
         viewBox="0 0 24 24"
         fill="none"
@@ -89,18 +89,18 @@
           d="M6 4h12"></path>
       </svg>
     </div>
-    <div class="toast-body">
+    <div class="ps-nudge-body">
       <strong>Posture</strong>
       <span>You have been leaning in for 4 minutes. Sit back.</span>
     </div>
   </div>
 
-  <div class="badge badge-bad"><i></i>Slouching</div>
-  <div class="badge badge-good"><i></i>Upright</div>
+  <div class="ps-state ps-state-slouch"><i></i>Slouching</div>
+  <div class="ps-state ps-state-upright"><i></i>Upright</div>
 </div>
 
 <style>
-  .stage {
+  .ps-stage {
     position: relative;
     width: 100%;
     max-width: 480px;
@@ -114,49 +114,49 @@
     overflow: visible;
   }
 
-  .desk,
-  .desk-leg,
-  .chair,
-  .screen {
+  .ps-desk,
+  .ps-desk-leg,
+  .ps-chair,
+  .ps-screen {
     stroke: var(--line-strong);
   }
-  .screen {
+  .ps-screen {
     fill: var(--bg-sunk);
   }
-  .lens {
+  .ps-lens {
     fill: var(--muted);
   }
 
   /* the figure carries the state colour */
-  .spine,
-  .arm,
-  .neck {
+  .ps-spine,
+  .ps-arm,
+  .ps-neck {
     stroke: var(--warn);
   }
-  .skull {
+  .ps-skull {
     fill: var(--warn);
   }
 
-  .spine,
-  .arm,
-  .neck,
-  .skull {
+  .ps-spine,
+  .ps-arm,
+  .ps-neck,
+  .ps-skull {
     animation: tint 9s ease-in-out infinite;
   }
 
-  .torso {
+  .ps-torso {
     transform-box: view-box;
     transform-origin: 120px 216px;
     animation: slouch 9s ease-in-out infinite;
   }
 
-  .head {
+  .ps-head {
     transform-box: view-box;
     transform-origin: 122px 142px;
     animation: crane 9s ease-in-out infinite;
   }
 
-  .ping {
+  .ps-scan {
     stroke: var(--good);
     transform-box: view-box;
     transform-origin: 271px 158px;
@@ -230,7 +230,7 @@
   }
 
   /* the notification */
-  .toast {
+  .ps-nudge {
     position: absolute;
     top: 2%;
     right: -4%;
@@ -249,7 +249,7 @@
     animation: toast 9s ease-in-out infinite;
   }
 
-  .toast-icon {
+  .ps-nudge-icon {
     flex: 0 0 auto;
     width: 30px;
     height: 30px;
@@ -258,23 +258,23 @@
     display: grid;
     place-items: center;
   }
-  .toast-icon svg {
+  .ps-nudge-icon svg {
     width: 17px;
     height: 17px;
     stroke: var(--bg-elev);
   }
 
-  .toast-body {
+  .ps-nudge-body {
     display: flex;
     flex-direction: column;
     line-height: 1.35;
     min-width: 0;
   }
-  .toast-body strong {
+  .ps-nudge-body strong {
     font-size: 0.8rem;
     font-weight: 620;
   }
-  .toast-body span {
+  .ps-nudge-body span {
     font-size: 0.8rem;
     color: var(--muted);
   }
@@ -298,7 +298,7 @@
   }
 
   /* state pills */
-  .badge {
+  .ps-state {
     position: absolute;
     left: 0;
     bottom: 6%;
@@ -312,27 +312,27 @@
     border: 1px solid var(--line);
     opacity: 0;
   }
-  .badge i {
+  .ps-state i {
     width: 7px;
     height: 7px;
     border-radius: 50%;
   }
 
-  .badge-bad {
+  .ps-state-slouch {
     background: var(--warn-soft);
     color: var(--warn);
     animation: badge-bad 9s ease-in-out infinite;
   }
-  .badge-bad i {
+  .ps-state-slouch i {
     background: var(--warn);
   }
 
-  .badge-good {
+  .ps-state-upright {
     background: var(--good-soft);
     color: var(--good);
     animation: badge-good 9s ease-in-out infinite;
   }
-  .badge-good i {
+  .ps-state-upright i {
     background: var(--good);
   }
 
@@ -366,7 +366,7 @@
   }
 
   @media (max-width: 560px) {
-    .toast {
+    .ps-nudge {
       right: 0;
       width: min(15rem, 88%);
     }
@@ -374,28 +374,28 @@
 
   /* one honest still frame when motion is unwelcome */
   @media (prefers-reduced-motion: reduce) {
-    .torso,
-    .head {
+    .ps-torso,
+    .ps-head {
       transform: rotate(0deg);
     }
-    .spine,
-    .arm,
-    .neck {
+    .ps-spine,
+    .ps-arm,
+    .ps-neck {
       stroke: var(--good);
     }
-    .skull {
+    .ps-skull {
       fill: var(--good);
     }
-    .toast {
+    .ps-nudge {
       opacity: 1;
     }
-    .badge-good {
+    .ps-state-upright {
       opacity: 1;
     }
-    .badge-bad {
+    .ps-state-slouch {
       opacity: 0;
     }
-    .ping {
+    .ps-scan {
       opacity: 0;
     }
   }

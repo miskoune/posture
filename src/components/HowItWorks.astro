@@ -2,10 +2,10 @@
 import { steps } from '../data/steps';
 ---
 
-<section class="how section" id="how">
-  <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">How it works</p>
+<section class="ps-how ps-section" id="ps-how">
+  <div class="ps-shell">
+    <div class="ps-head">
+      <p class="ps-kicker">How it works</p>
       <h2>Three steps, then it gets out of the&nbsp;way.</h2>
     </div>
 
@@ -13,7 +13,7 @@ import { steps } from '../data/steps';
       {
         steps.map((s) => (
           <li>
-            <span class="n">{s.n}</span>
+            <span class="ps-num">{s.n}</span>
             <div>
               <h3>{s.title}</h3>
               <p>{s.body}</p>
@@ -26,7 +26,7 @@ import { steps } from '../data/steps';
 </section>
 
 <style>
-  .head {
+  .ps-head {
     max-width: 50ch;
     margin-bottom: 3.2rem;
   }
@@ -51,7 +51,7 @@ import { steps } from '../data/steps';
     border-bottom: 1px solid var(--line);
   }
 
-  .n {
+  .ps-num {
     font-family: var(--mono);
     font-size: 0.8rem;
     color: var(--good);

@@ -2,14 +2,14 @@
 import { features } from '../data/features';
 ---
 
-<section class="section features">
-  <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">Details</p>
+<section class="ps-section ps-features">
+  <div class="ps-shell">
+    <div class="ps-head">
+      <p class="ps-kicker">Details</p>
       <h2>Small app, few opinions.</h2>
     </div>
 
-    <div class="grid">
+    <div class="ps-grid">
       {
         features.map((f) => (
           <article>
@@ -33,16 +33,16 @@ import { features } from '../data/features';
 </section>
 
 <style>
-  .features {
+  .ps-features {
     background: var(--bg-sunk);
     border-block: 1px solid var(--line);
   }
-  .head {
+  .ps-head {
     max-width: 44ch;
     margin-bottom: 3rem;
   }
 
-  .grid {
+  .ps-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
     gap: clamp(1.6rem, 4vw, 2.6rem);

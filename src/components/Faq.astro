@@ -2,14 +2,14 @@
 import { faqs } from '../data/faq';
 ---
 
-<section class="section" id="faq">
-  <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">Questions</p>
+<section class="ps-section" id="ps-faq">
+  <div class="ps-shell">
+    <div class="ps-head">
+      <p class="ps-kicker">Questions</p>
       <h2>Reasonable suspicions, answered.</h2>
     </div>
 
-    <div class="list">
+    <div class="ps-list">
       {
         faqs.map((f, i) => (
           <details name="faq" open={i === 0}>
@@ -34,12 +34,12 @@ import { faqs } from '../data/faq';
 </section>
 
 <style>
-  .head {
+  .ps-head {
     max-width: 44ch;
     margin-bottom: 2.6rem;
   }
 
-  .list {
+  .ps-list {
     max-width: 46rem;
   }
 

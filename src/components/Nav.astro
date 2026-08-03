@@ -3,8 +3,8 @@ import { site } from '../config/site';
 ---
 
 <header>
-  <nav class="wrap" aria-label="Main">
-    <a class="brand" href="/">
+  <nav class="ps-shell" aria-label="Main">
+    <a class="ps-brand" href="/">
       <svg
         viewBox="0 0 24 24"
         fill="none"
@@ -20,11 +20,11 @@ import { site } from '../config/site';
       {site.name}
     </a>
 
-    <div class="links">
-      <a href="#how">How it works</a>
-      <a href="#privacy">Privacy</a>
-      <a href="#faq">FAQ</a>
-      <a class="gh" href={site.repo} rel="noopener">GitHub</a>
+    <div class="ps-links">
+      <a href="#ps-how">How it works</a>
+      <a href="#ps-privacy">Privacy</a>
+      <a href="#ps-faq">FAQ</a>
+      <a class="ps-gh" href={site.repo} rel="noopener">GitHub</a>
     </div>
   </nav>
 </header>
@@ -62,7 +62,7 @@ import { site } from '../config/site';
     height: 62px;
   }
 
-  .brand {
+  .ps-brand {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -71,32 +71,32 @@ import { site } from '../config/site';
     text-decoration: none;
     font-size: 1.02rem;
   }
-  .brand svg {
+  .ps-brand svg {
     width: 19px;
     height: 19px;
     stroke: var(--good);
   }
 
-  .links {
+  .ps-links {
     display: flex;
     align-items: center;
     gap: 1.6rem;
   }
-  .links a {
+  .ps-links a {
     font-size: 0.9rem;
     color: var(--muted);
     text-decoration: none;
     transition: color 0.15s ease;
   }
-  .links a:hover {
+  .ps-links a:hover {
     color: var(--text);
   }
-  .gh {
+  .ps-gh {
     font-weight: 560;
   }
 
   @media (max-width: 640px) {
-    .links a:not(.gh) {
+    .ps-links a:not(.ps-gh) {
       display: none;
     }
   }
