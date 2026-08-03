@@ -1,0 +1,402 @@
+---
+/**
+ * The hero visual: a side-profile figure at a desk that slouches, gets caught,
+ * and straightens up — the whole product in one loop.
+ *
+ * Everything is a CSS transform on grouped SVG nodes, so it stays crisp at any
+ * size and costs no JavaScript. The loop is 9s and pauses under
+ * prefers-reduced-motion (handled globally in global.css).
+ */
+---
+
+<div
+  class="stage"
+  role="img"
+  aria-label="A person slouching at a desk, receiving a notification, then sitting up straight."
+>
+  <svg viewBox="0 0 340 280" fill="none" aria-hidden="true">
+    <!-- desk -->
+    <path
+      class="desk"
+      d="M150 214 H332"
+      stroke-width="2.5"
+      stroke-linecap="round"></path>
+    <path
+      class="desk-leg"
+      d="M318 214 V246"
+      stroke-width="2.5"
+      stroke-linecap="round"></path>
+
+    <!-- display, with the camera notch the app actually uses -->
+    <rect
+      class="screen"
+      x="228"
+      y="150"
+      width="86"
+      height="58"
+      rx="6"
+      stroke-width="2.5"></rect>
+    <path
+      class="screen"
+      d="M258 214 h26"
+      stroke-width="2.5"
+      stroke-linecap="round"></path>
+    <circle class="lens" cx="271" cy="158" r="2.6"></circle>
+
+    <!-- chair -->
+    <path
+      class="chair"
+      d="M84 216 V250 M84 216 h34"
+      stroke-width="2.5"
+      stroke-linecap="round"></path>
+
+    <!-- the body: hips are fixed, everything above them rotates -->
+    <g class="torso">
+      <path
+        class="spine"
+        d="M120 216 C116 190 118 166 122 142"
+        stroke-width="9"
+        stroke-linecap="round"></path>
+      <path
+        class="arm"
+        d="M124 152 C150 160 176 186 206 200"
+        stroke-width="7"
+        stroke-linecap="round"></path>
+      <g class="head">
+        <circle class="skull" cx="127" cy="118" r="21"></circle>
+        <path
+          class="neck"
+          d="M122 142 L126 132"
+          stroke-width="8"
+          stroke-linecap="round"></path>
+      </g>
+    </g>
+
+    <!-- detection ring, pulsing from the camera toward the figure -->
+    <circle class="ping" cx="271" cy="158" r="10" stroke-width="2"></circle>
+  </svg>
+
+  <!-- macOS-style banner, timed to the moment the slouch is caught -->
+  <div class="toast">
+    <div class="toast-icon" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2.2"
+        stroke-linecap="round"
+      >
+        <path d="M12 20V10"></path><path d="M8 13l4-4 4 4"></path><path
+          d="M6 4h12"></path>
+      </svg>
+    </div>
+    <div class="toast-body">
+      <strong>Posture</strong>
+      <span>You have been leaning in for 4 minutes. Sit back.</span>
+    </div>
+  </div>
+
+  <div class="badge badge-bad"><i></i>Slouching</div>
+  <div class="badge badge-good"><i></i>Upright</div>
+</div>
+
+<style>
+  .stage {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    margin-inline: auto;
+    aspect-ratio: 340 / 280;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .desk,
+  .desk-leg,
+  .chair,
+  .screen {
+    stroke: var(--line-strong);
+  }
+  .screen {
+    fill: var(--bg-sunk);
+  }
+  .lens {
+    fill: var(--muted);
+  }
+
+  /* the figure carries the state colour */
+  .spine,
+  .arm,
+  .neck {
+    stroke: var(--warn);
+  }
+  .skull {
+    fill: var(--warn);
+  }
+
+  .spine,
+  .arm,
+  .neck,
+  .skull {
+    animation: tint 9s ease-in-out infinite;
+  }
+
+  .torso {
+    transform-box: view-box;
+    transform-origin: 120px 216px;
+    animation: slouch 9s ease-in-out infinite;
+  }
+
+  .head {
+    transform-box: view-box;
+    transform-origin: 122px 142px;
+    animation: crane 9s ease-in-out infinite;
+  }
+
+  .ping {
+    stroke: var(--good);
+    transform-box: view-box;
+    transform-origin: 271px 158px;
+    animation: ping 9s ease-out infinite;
+  }
+
+  /* 0-38% slouched · 38-46% caught · 46-86% upright · 86-100% drifting back */
+  @keyframes slouch {
+    0%,
+    38% {
+      transform: rotate(15deg) translateY(3px);
+    }
+    50%,
+    84% {
+      transform: rotate(0deg) translateY(0);
+    }
+    100% {
+      transform: rotate(15deg) translateY(3px);
+    }
+  }
+
+  @keyframes crane {
+    0%,
+    38% {
+      transform: rotate(13deg) translate(7px, 5px);
+    }
+    50%,
+    84% {
+      transform: rotate(0deg) translate(0, 0);
+    }
+    100% {
+      transform: rotate(13deg) translate(7px, 5px);
+    }
+  }
+
+  @keyframes tint {
+    0%,
+    40% {
+      stroke: var(--warn);
+      fill: var(--warn);
+    }
+    52%,
+    82% {
+      stroke: var(--good);
+      fill: var(--good);
+    }
+    100% {
+      stroke: var(--warn);
+      fill: var(--warn);
+    }
+  }
+
+  @keyframes ping {
+    0%,
+    30% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    36% {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+    48% {
+      opacity: 0;
+      transform: scale(4.5);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(4.5);
+    }
+  }
+
+  /* the notification */
+  .toast {
+    position: absolute;
+    top: 2%;
+    right: -4%;
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    width: min(17.5rem, 78%);
+    padding: 0.75rem 0.9rem;
+    border-radius: 14px;
+    background: color-mix(in oklab, var(--bg-elev) 82%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    animation: toast 9s ease-in-out infinite;
+  }
+
+  .toast-icon {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--good);
+    display: grid;
+    place-items: center;
+  }
+  .toast-icon svg {
+    width: 17px;
+    height: 17px;
+    stroke: var(--bg-elev);
+  }
+
+  .toast-body {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+    min-width: 0;
+  }
+  .toast-body strong {
+    font-size: 0.8rem;
+    font-weight: 620;
+  }
+  .toast-body span {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  @keyframes toast {
+    0%,
+    33% {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.97);
+    }
+    40%,
+    62% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    72%,
+    100% {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.97);
+    }
+  }
+
+  /* state pills */
+  .badge {
+    position: absolute;
+    left: 0;
+    bottom: 6%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.32rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 560;
+    border: 1px solid var(--line);
+    opacity: 0;
+  }
+  .badge i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  .badge-bad {
+    background: var(--warn-soft);
+    color: var(--warn);
+    animation: badge-bad 9s ease-in-out infinite;
+  }
+  .badge-bad i {
+    background: var(--warn);
+  }
+
+  .badge-good {
+    background: var(--good-soft);
+    color: var(--good);
+    animation: badge-good 9s ease-in-out infinite;
+  }
+  .badge-good i {
+    background: var(--good);
+  }
+
+  @keyframes badge-bad {
+    0%,
+    40% {
+      opacity: 1;
+    }
+    46%,
+    88% {
+      opacity: 0;
+    }
+    96%,
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes badge-good {
+    0%,
+    44% {
+      opacity: 0;
+    }
+    52%,
+    84% {
+      opacity: 1;
+    }
+    92%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .toast {
+      right: 0;
+      width: min(15rem, 88%);
+    }
+  }
+
+  /* one honest still frame when motion is unwelcome */
+  @media (prefers-reduced-motion: reduce) {
+    .torso,
+    .head {
+      transform: rotate(0deg);
+    }
+    .spine,
+    .arm,
+    .neck {
+      stroke: var(--good);
+    }
+    .skull {
+      fill: var(--good);
+    }
+    .toast {
+      opacity: 1;
+    }
+    .badge-good {
+      opacity: 1;
+    }
+    .badge-bad {
+      opacity: 0;
+    }
+    .ping {
+      opacity: 0;
+    }
+  }
+</style>

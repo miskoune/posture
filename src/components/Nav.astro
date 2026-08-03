@@ -1,0 +1,103 @@
+---
+import { site } from '../config/site';
+---
+
+<header>
+  <nav class="wrap" aria-label="Main">
+    <a class="brand" href="/">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2.3"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M12 21V9"></path><path d="M8 12l4-4 4 4"></path><circle
+          cx="12"
+          cy="4.5"
+          r="2.2"></circle>
+      </svg>
+      {site.name}
+    </a>
+
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">FAQ</a>
+      <a class="gh" href={site.repo} rel="noopener">GitHub</a>
+    </div>
+  </nav>
+</header>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklab, var(--bg) 80%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+  /* the rule only appears once the page has moved under it */
+  @supports (animation-timeline: scroll()) {
+    header {
+      animation: reveal-rule linear both;
+      animation-timeline: scroll();
+      animation-range: 0 80px;
+    }
+    @keyframes reveal-rule {
+      to {
+        border-bottom-color: var(--line);
+      }
+    }
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 62px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 640;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    font-size: 1.02rem;
+  }
+  .brand svg {
+    width: 19px;
+    height: 19px;
+    stroke: var(--good);
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+  }
+  .links a {
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .links a:hover {
+    color: var(--text);
+  }
+  .gh {
+    font-weight: 560;
+  }
+
+  @media (max-width: 640px) {
+    .links a:not(.gh) {
+      display: none;
+    }
+  }
+</style>

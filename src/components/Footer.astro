@@ -1,0 +1,64 @@
+---
+import { site } from '../config/site';
+
+const year = new Date().getFullYear();
+---
+
+<section class="closing">
+  <div class="wrap">
+    <h2>Sit back.</h2>
+    <p class="lede">
+      Posture is being built in the open. Watch the repository and you will know
+      the moment there is something to install.
+    </p>
+    <a class="btn btn-primary" href={site.repo} rel="noopener"
+      >Follow on GitHub</a
+    >
+  </div>
+</section>
+
+<footer>
+  <div class="wrap row">
+    <p>© {year} {site.name} · built in Paris</p>
+    <nav aria-label="Footer">
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">FAQ</a>
+      <a href={site.repo} rel="noopener">Source</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .closing {
+    padding-block: clamp(4.5rem, 11vw, 7.5rem);
+    text-align: center;
+  }
+  .closing .lede {
+    margin: 1.1rem auto 2rem;
+    max-width: 42ch;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-block: 1.8rem;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.86rem;
+    color: var(--muted);
+  }
+  .row nav {
+    display: flex;
+    gap: 1.4rem;
+  }
+  .row a {
+    text-decoration: none;
+  }
+  .row a:hover {
+    color: var(--text);
+  }
+</style>

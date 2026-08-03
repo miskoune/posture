@@ -1,0 +1,83 @@
+name: Build & Deploy Astro
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-posture
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Quality gates run before the build, so a broken type or a lint error
+      # never reaches production.
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run check
+
+      - name: Build the project
+        run: npm run build
+
+      - name: SSH auth
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/ci_key
+          chmod 600 ~/.ssh/ci_key
+          ssh-keyscan -p "${{ secrets.PORT }}" "${{ secrets.HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to production (atomic release)
+        env:
+          SSH_OPTS: '-i ~/.ssh/ci_key -p ${{ secrets.PORT }} -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes'
+          REMOTE: '${{ secrets.USER }}@${{ secrets.HOST }}'
+          BASE: '${{ secrets.DEPLOY_PATH }}'
+          SHA: '${{ github.sha }}'
+        run: |
+          set -euo pipefail
+
+          # 1. Ensure the releases directory exists
+          ssh $SSH_OPTS "$REMOTE" "mkdir -p '$BASE/releases'"
+
+          # 2. Upload the build into a fresh, immutable release folder.
+          #    --link-dest hardlinks unchanged files from the live release,
+          #    so unchanged assets cost no extra disk and upload fast.
+          rsync -az --delete \
+            --link-dest="$BASE/current/" \
+            -e "ssh $SSH_OPTS" \
+            dist/ \
+            "$REMOTE:$BASE/releases/$SHA/"
+
+          # 3. Atomically flip the 'current' symlink, then prune old releases (keep 5).
+          ssh $SSH_OPTS "$REMOTE" "
+            set -eu
+            cd '$BASE'
+            ln -sfn 'releases/$SHA' current.tmp
+            mv -Tf current.tmp current
+            ls -1dt releases/*/ | tail -n +6 | xargs -r rm -rf
+          "
+
+      # A green check should mean the site is actually up, not merely that the
+      # files copied.
+      - name: Smoke test
+        run: |
+          code=$(curl -sS -o /dev/null -w '%{http_code}' https://posture.miskoune.com/)
+          echo "https://posture.miskoune.com → $code"
+          [ "$code" -lt 400 ]

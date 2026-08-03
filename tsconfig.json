@@ -1,0 +1,16 @@
+{
+  "extends": "astro/tsconfigs/strictest",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    // Every file is a module; no accidental global scripts.
+    "moduleDetection": "force",
+    // Only allow syntax that can be erased by a type-stripping runtime —
+    // rules out enums, namespaces and parameter properties (TS 5.8+).
+    "erasableSyntaxOnly": true,
+    // Side-effect imports must resolve to something real (TS 5.6+).
+    "noUncheckedSideEffectImports": true,
+    // Index-signature members must be reached with obj['key'], not obj.key.
+    "noPropertyAccessFromIndexSignature": true
+  }
+}

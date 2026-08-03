@@ -1,0 +1,81 @@
+---
+import { privacyPoints } from '../data/privacy';
+import { site } from '../config/site';
+---
+
+<section class="privacy section" id="privacy">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Privacy</p>
+      <h2>A camera app you can actually leave&nbsp;on.</h2>
+      <p class="lede">
+        Pointing a webcam at yourself all day is a big ask, and it should be.
+        Posture is built so the honest answer to “where does the video go?” is
+        <em>nowhere</em> — it never leaves the frame buffer.
+      </p>
+    </div>
+
+    <div class="grid">
+      {
+        privacyPoints.map((p) => (
+          <article class="card">
+            <h3>{p.title}</h3>
+            <p>{p.body}</p>
+          </article>
+        ))
+      }
+    </div>
+
+    <p class="verify">
+      Posture is open source. If you would rather not take any of this on trust,
+      the camera and networking code is
+      <a href={site.repo} rel="noopener">right there to read</a>.
+    </p>
+  </div>
+</section>
+
+<style>
+  .privacy {
+    background: var(--bg-sunk);
+    border-block: 1px solid var(--line);
+  }
+
+  .head {
+    max-width: 58ch;
+    margin-bottom: 3rem;
+  }
+  .head .lede {
+    margin-top: 1.1rem;
+    max-width: 54ch;
+  }
+  .head em {
+    font-style: normal;
+    color: var(--good);
+    font-weight: 560;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+  }
+
+  .card h3 {
+    margin-bottom: 0.5rem;
+  }
+  .card p {
+    color: var(--muted);
+    font-size: 0.94rem;
+  }
+
+  .verify {
+    margin-top: 2rem;
+    font-size: 0.94rem;
+    color: var(--muted);
+    max-width: 60ch;
+  }
+  .verify a {
+    color: var(--good);
+    text-underline-offset: 3px;
+  }
+</style>

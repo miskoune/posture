@@ -1,0 +1,90 @@
+---
+import { faqs } from '../data/faq';
+---
+
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Questions</p>
+      <h2>Reasonable suspicions, answered.</h2>
+    </div>
+
+    <div class="list">
+      {
+        faqs.map((f, i) => (
+          <details name="faq" open={i === 0}>
+            <summary>
+              {f.q}
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .head {
+    max-width: 44ch;
+    margin-bottom: 2.6rem;
+  }
+
+  .list {
+    max-width: 46rem;
+  }
+
+  details {
+    border-top: 1px solid var(--line);
+  }
+  details:last-of-type {
+    border-bottom: 1px solid var(--line);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.15rem;
+    cursor: pointer;
+    font-weight: 545;
+    font-size: 1.02rem;
+    list-style: none;
+    transition: color 0.15s ease;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary:hover {
+    color: var(--good);
+  }
+
+  summary svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    stroke: var(--muted);
+    transition: transform 0.22s ease;
+  }
+  details[open] summary svg {
+    transform: rotate(180deg);
+  }
+
+  details p {
+    color: var(--muted);
+    font-size: 0.96rem;
+    max-width: 62ch;
+    padding-bottom: 1.35rem;
+    margin-top: -0.2rem;
+  }
+</style>

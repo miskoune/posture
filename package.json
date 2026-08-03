@@ -1,0 +1,29 @@
+{
+  "name": "posture",
+  "type": "module",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "start": "astro dev",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format:check": "prettier --check .",
+    "format:fix": "prettier --write ."
+  },
+  "dependencies": {
+    "astro": "^5.18.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.5",
+    "@miskoune/config": "^1.1.2",
+    "eslint": "^10.8.0",
+    "eslint-plugin-astro": "^1.5.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^5.9.3"
+  }
+}
