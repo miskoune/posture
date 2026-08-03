@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  The sandbox is what turns "we promise not to upload anything" into
+	  something the operating system enforces.
+
+	  Note what is absent: com.apple.security.network.client. Without it the
+	  app cannot open a socket even if a future version tried to. That absence
+	  is the product claim, so do not add it — if something here ever needs the
+	  network, that is a decision to argue about, not a line to quietly add.
+	-->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+
+	<key>com.apple.security.device.camera</key>
+	<true/>
+</dict>
+</plist>

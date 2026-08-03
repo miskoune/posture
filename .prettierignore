@@ -1,0 +1,8 @@
+# Vendored from @miskoune/skills — reformatting would diverge from upstream
+# and make the next `skills update` look like a change.
+.claude/
+
+# Build output
+dist/
+app/.build/
+app/build/

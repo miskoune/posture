@@ -3,3 +3,7 @@ dist/
 .astro/
 .env
 .DS_Store
+
+# Swift build output
+app/.build/
+app/build/

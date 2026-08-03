@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Posture</string>
+	<key>CFBundleDisplayName</key>
+	<string>Posture</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.miskoune.posture</string>
+	<key>CFBundleExecutable</key>
+	<string>Posture</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+
+	<!-- No Dock icon, no app switcher entry: it lives in the menu bar. -->
+	<key>LSUIElement</key>
+	<true/>
+
+	<!-- Shown in the macOS permission prompt. Say what actually happens. -->
+	<key>NSCameraUsageDescription</key>
+	<string>Posture measures the angle of your neck and shoulders to tell you when you slouch. Frames are analysed in memory and discarded — nothing is recorded, and the app has no network access.</string>
+
+	<key>NSHumanReadableCopyright</key>
+	<string>MIT licensed. https://github.com/miskoune/posture</string>
+</dict>
+</plist>
