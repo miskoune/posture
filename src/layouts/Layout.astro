@@ -25,6 +25,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
 
+    <link
+      rel="preload"
+      href="/fonts/Inter.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta
       name="theme-color"
