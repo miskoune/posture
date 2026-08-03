@@ -2,20 +2,25 @@
 import { faqs } from '../data/faq';
 ---
 
-<section class="ps-section" id="ps-faq">
-  <div class="ps-shell">
-    <div class="ps-head">
-      <p class="ps-kicker">Questions</p>
-      <h2>Reasonable suspicions, answered.</h2>
-    </div>
+<section class="ps-screen" id="ps-faq">
+  <div class="ps-shell max-w-[46rem]">
+    <p class="ps-kicker">Questions</p>
+    <h2 class="mt-4 text-[clamp(1.9rem,4.2vw,2.9rem)]">
+      Reasonable suspicions, answered.
+    </h2>
 
-    <div class="ps-list">
+    <div class="mt-12 border-t border-line">
       {
-        faqs.map((f, i) => (
-          <details name="faq" open={i === 0}>
-            <summary>
-              {f.q}
+        faqs.map((faq, i) => (
+          <details
+            class="ps-faq group border-b border-line"
+            name="ps-faq"
+            open={i === 0}
+          >
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-[1.02rem] font-medium">
+              {faq.q}
               <svg
+                class="h-[18px] w-[18px] shrink-0 stroke-muted transition-transform duration-200 group-open:rotate-180"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke-width="2"
@@ -25,7 +30,7 @@ import { faqs } from '../data/faq';
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </summary>
-            <p>{f.a}</p>
+            <p class="pb-6 text-[0.97rem] text-muted">{faq.a}</p>
           </details>
         ))
       }
@@ -34,57 +39,8 @@ import { faqs } from '../data/faq';
 </section>
 
 <style>
-  .ps-head {
-    max-width: 44ch;
-    margin-bottom: 2.6rem;
-  }
-
-  .ps-list {
-    max-width: 46rem;
-  }
-
-  details {
-    border-top: 1px solid var(--line);
-  }
-  details:last-of-type {
-    border-bottom: 1px solid var(--line);
-  }
-
-  summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    padding-block: 1.15rem;
-    cursor: pointer;
-    font-weight: 545;
-    font-size: 1.02rem;
-    list-style: none;
-    transition: color 0.15s ease;
-  }
-  summary::-webkit-details-marker {
+  /* Safari still paints the default triangle without this */
+  .ps-faq summary::-webkit-details-marker {
     display: none;
-  }
-  summary:hover {
-    color: var(--good);
-  }
-
-  summary svg {
-    width: 17px;
-    height: 17px;
-    flex: 0 0 auto;
-    stroke: var(--muted);
-    transition: transform 0.22s ease;
-  }
-  details[open] summary svg {
-    transform: rotate(180deg);
-  }
-
-  details p {
-    color: var(--muted);
-    font-size: 0.96rem;
-    max-width: 62ch;
-    padding-bottom: 1.35rem;
-    margin-top: -0.2rem;
   }
 </style>

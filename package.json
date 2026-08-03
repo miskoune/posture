@@ -13,10 +13,13 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format:check": "prettier --check .",
-    "format:fix": "prettier --write ."
+    "format:fix": "prettier --write .",
+    "og": "FONTCONFIG_FILE=$PWD/scripts/fonts.conf node scripts/make-og.mjs"
   },
   "dependencies": {
-    "astro": "^7.1.6"
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.1.6",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

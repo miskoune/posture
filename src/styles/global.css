@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 /* ------------------------------------------------------------------- fonts */
 
 @font-face {
@@ -7,218 +9,143 @@
   font-display: swap;
 }
 
-/* ------------------------------------------------------------------ tokens */
+/* ------------------------------------------------------------------ tokens
+ *
+ * Rule 2 — three colours. Paper, ink, and one accent. Everything else in the
+ * palette is a tint of ink (muted text, hairlines, sunk panels), never a
+ * fourth hue. The old amber "slouching" colour is gone on purpose: grey now
+ * carries the wrong state, so green is the only thing on the page that can
+ * pull the eye, and it is spent on the single call to action.
+ */
 
 :root {
   color-scheme: light dark;
 
-  --bg: #fbfbf9;
-  --bg-elev: #ffffff;
-  --bg-sunk: #f2f3f0;
-  --text: #14181a;
-  --muted: #5c665f;
-  --line: #e3e6e1;
-  --line-strong: #cdd3cc;
+  --paper: #ffffff;
+  --raised: #ffffff;
+  --sunk: #f5f6f4;
+  --ink: #0c0f0e;
+  --muted: #5e6862;
+  --line: #e5e8e4;
+  --line-strong: #cfd4cf;
+  --accent: #0f9d6e;
+  --accent-soft: #e2f4ec;
+  --accent-ink: #ffffff;
 
-  /* the product's own language: amber = slouching, green = upright */
-  --good: #0f9d6e;
-  --good-soft: #d9f2e7;
-  --warn: #c2710c;
-  --warn-soft: #fbeeda;
-
-  --shadow-sm: 0 1px 2px rgb(20 24 26 / 0.06), 0 1px 8px rgb(20 24 26 / 0.04);
-  --shadow-lg: 0 12px 40px rgb(20 24 26 / 0.1), 0 2px 8px rgb(20 24 26 / 0.05);
-
-  --radius: 14px;
-  --radius-lg: 22px;
-  --maxw: 1080px;
-  --gutter: clamp(1.25rem, 5vw, 2.5rem);
-
-  --font:
-    Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    system-ui, 'Helvetica Neue', sans-serif;
-  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  --shadow-sm: 0 1px 2px rgb(12 15 14 / 0.06), 0 1px 8px rgb(12 15 14 / 0.04);
+  --shadow-lg: 0 12px 40px rgb(12 15 14 / 0.1), 0 2px 8px rgb(12 15 14 / 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0b0e0d;
-    --bg-elev: #141817;
-    --bg-sunk: #101413;
-    --text: #e9edea;
-    --muted: #93a09a;
-    --line: #222927;
-    --line-strong: #333c39;
-
-    --good: #37d39b;
-    --good-soft: #0f2a22;
-    --warn: #e8a33d;
-    --warn-soft: #2a2013;
+    --paper: #0a0c0b;
+    --raised: #121615;
+    --sunk: #0f1211;
+    --ink: #eaeeeb;
+    --muted: #929c96;
+    --line: #1f2523;
+    --line-strong: #333b38;
+    --accent: #37d39b;
+    --accent-soft: #0e2a21;
+    --accent-ink: #06120d;
 
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 16px 50px rgb(0 0 0 / 0.55);
   }
 }
 
-/* ------------------------------------------------------------------- base */
+/* `inline` makes Tailwind emit var() references rather than baked values, so
+ * every utility follows the media query above without a second class. */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-raised: var(--raised);
+  --color-sunk: var(--sunk);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+  --shadow-card: var(--shadow-sm);
+  --shadow-float: var(--shadow-lg);
+
+  --font-sans:
+    Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    system-ui, 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
+/* -------------------------------------------------------------------- base */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-weight: 640;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
 }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 17px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+/* ---------------------------------------------------------------- utilities
+ *
+ * Only patterns that repeat across five or more components live here; the rest
+ * stays inline in the markup where Tailwind belongs. Every name keeps the ps-
+ * prefix so a content blocker cannot match it generically.
+ */
 
-h1,
-h2,
-h3 {
-  margin: 0;
-  line-height: 1.08;
-  letter-spacing: -0.028em;
-  font-weight: 640;
-  text-wrap: balance;
-}
-
-h1 {
-  font-size: clamp(2.5rem, 6.2vw, 4.15rem);
-  letter-spacing: -0.038em;
-}
-h2 {
-  font-size: clamp(1.8rem, 3.6vw, 2.6rem);
-}
-h3 {
-  font-size: 1.075rem;
-  letter-spacing: -0.014em;
-}
-
-p {
-  margin: 0;
-  text-wrap: pretty;
-}
-
-a {
-  color: inherit;
-}
-
-img,
-svg {
-  max-width: 100%;
-  display: block;
-}
-
-::selection {
-  background: var(--good);
-  color: var(--bg);
-}
-
-:focus-visible {
-  outline: 2px solid var(--good);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-/* ---------------------------------------------------------------- helpers */
-
-.ps-shell {
+@utility ps-shell {
   width: 100%;
-  max-width: var(--maxw);
+  max-width: 68rem;
   margin-inline: auto;
-  padding-inline: var(--gutter);
+  padding-inline: clamp(1.25rem, 5vw, 2.5rem);
 }
 
-.ps-section {
-  padding-block: clamp(4.5rem, 11vw, 8rem);
+/* Rule 6 — one idea per screen. Sections are tall enough that a phone shows
+ * one message at a time instead of three half-messages. */
+@utility ps-screen {
+  padding-block: clamp(5rem, 14vw, 9rem);
 }
 
-.ps-kicker {
-  font-size: 0.775rem;
+@utility ps-kicker {
+  font-size: 0.75rem;
   font-weight: 620;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--good);
-  margin-bottom: 1.1rem;
-}
-
-.ps-lede {
-  font-size: clamp(1.06rem, 1.9vw, 1.22rem);
   color: var(--muted);
-  max-width: 46ch;
-}
-
-.ps-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.78rem 1.35rem;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  font-size: 0.95rem;
-  font-weight: 560;
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    transform 0.14s ease,
-    background 0.16s ease,
-    border-color 0.16s ease;
-}
-.ps-btn:hover {
-  transform: translateY(-1px);
-}
-.ps-btn:active {
-  transform: translateY(0);
-}
-
-.ps-btn-solid {
-  background: var(--text);
-  color: var(--bg);
-}
-.ps-btn-solid:hover {
-  background: color-mix(in oklab, var(--text) 86%, var(--good));
-}
-
-.ps-btn-ghost {
-  border-color: var(--line-strong);
-  color: var(--text);
-}
-.ps-btn-ghost:hover {
-  border-color: var(--text);
-  background: var(--bg-elev);
-}
-
-.ps-point {
-  background: var(--bg-elev);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-}
-
-.ps-skip {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  background: var(--bg-elev);
-  padding: 0.7rem 1rem;
-  border-radius: 8px;
-  z-index: 100;
-}
-.ps-skip:focus {
-  left: 1rem;
-  top: 1rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -2,20 +2,31 @@
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
-import Privacy from '../components/Privacy.astro';
+import Problem from '../components/Problem.astro';
 import HowItWorks from '../components/HowItWorks.astro';
-import Features from '../components/Features.astro';
+import Privacy from '../components/Privacy.astro';
+import Compare from '../components/Compare.astro';
+import Price from '../components/Price.astro';
 import Faq from '../components/Faq.astro';
 import Footer from '../components/Footer.astro';
+
+/**
+ * Rule 6 — one idea per screen, in the order a sceptic asks for them:
+ * show it, name the problem, explain it, prove it, place it, price it, answer
+ * the rest. The feature grid that used to sit here is gone on purpose — rule 11
+ * says be known for one thing, and six icons made it six things.
+ */
 ---
 
 <Layout>
   <Nav />
   <main>
     <Hero />
-    <Privacy />
+    <Problem />
     <HowItWorks />
-    <Features />
+    <Privacy />
+    <Compare />
+    <Price />
     <Faq />
   </main>
   <Footer />

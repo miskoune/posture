@@ -1,64 +1,61 @@
 ---
+import GithubIcon from './GithubIcon.astro';
 import { site } from '../config/site';
+
+/**
+ * Rule 4 — finish strong: the last screen is the one people quote when they
+ * share the link, so it calls back to the headline instead of trailing off
+ * into a sitemap. Rule 15 — a real person's name and profile, no stock photo.
+ */
 
 const year = new Date().getFullYear();
 ---
 
-<section class="ps-closing">
+<section class="border-t border-line py-[clamp(6rem,16vw,11rem)] text-center">
   <div class="ps-shell">
-    <h2>Sit back.</h2>
-    <p class="ps-lede">
-      Posture is being built in the open. Watch the repository and you will know
-      the moment there is something to install.
+    <h2 class="mx-auto max-w-[16ch] text-[clamp(2.2rem,6vw,3.6rem)]">
+      You sat up just now, didn’t you.
+    </h2>
+
+    <p class="mx-auto mt-6 max-w-[38ch] text-[1.05rem] text-muted">
+      That is the whole product. The difference is that Posture notices the
+      other four hundred times, and this page cannot.
     </p>
-    <a class="ps-btn ps-btn-solid" href={site.repo} rel="noopener"
-      >Follow on GitHub</a
+
+    <a
+      class="mt-10 inline-flex items-center gap-2.5 rounded-xl bg-accent px-6 py-3.5 text-[1rem] font-semibold text-accent-ink no-underline shadow-float transition-transform hover:-translate-y-0.5"
+      href={site.repo}
+      rel="noopener"
     >
+      <GithubIcon class="h-[18px] w-[18px]" />
+      {site.ctaLabel}
+    </a>
   </div>
 </section>
 
-<footer>
-  <div class="ps-shell ps-row">
-    <p>© {year} {site.name} · built in Paris</p>
-    <nav aria-label="Footer">
-      <a href="#ps-privacy">Privacy</a>
-      <a href="#ps-faq">FAQ</a>
-      <a href={site.repo} rel="noopener">Source</a>
+<footer class="border-t border-line py-7">
+  <div
+    class="ps-shell flex flex-wrap items-center justify-between gap-4 text-[0.86rem] text-muted"
+  >
+    <p>
+      © {year}
+      {site.name} · built by
+      <a
+        class="underline underline-offset-2 hover:text-ink"
+        href={site.author}
+        rel="noopener"
+      >
+        @miskoune
+      </a> in Paris
+    </p>
+
+    <nav class="flex gap-6" aria-label="Footer">
+      <a class="no-underline hover:text-ink" href="#ps-privacy">Privacy</a>
+      <a class="no-underline hover:text-ink" href="#ps-price">Price</a>
+      <a class="no-underline hover:text-ink" href="#ps-faq">FAQ</a>
+      <a class="no-underline hover:text-ink" href={site.repo} rel="noopener">
+        Source
+      </a>
     </nav>
   </div>
 </footer>
-
-<style>
-  .ps-closing {
-    padding-block: clamp(4.5rem, 11vw, 7.5rem);
-    text-align: center;
-  }
-  .ps-closing .ps-lede {
-    margin: 1.1rem auto 2rem;
-    max-width: 42ch;
-  }
-
-  footer {
-    border-top: 1px solid var(--line);
-    padding-block: 1.8rem;
-  }
-  .ps-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.86rem;
-    color: var(--muted);
-  }
-  .ps-row nav {
-    display: flex;
-    gap: 1.4rem;
-  }
-  .ps-row a {
-    text-decoration: none;
-  }
-  .ps-row a:hover {
-    color: var(--text);
-  }
-</style>

@@ -121,7 +121,7 @@
     stroke: var(--line-strong);
   }
   .ps-screen {
-    fill: var(--bg-sunk);
+    fill: var(--sunk);
   }
   .ps-lens {
     fill: var(--muted);
@@ -131,10 +131,10 @@
   .ps-spine,
   .ps-arm,
   .ps-neck {
-    stroke: var(--warn);
+    stroke: var(--muted);
   }
   .ps-skull {
-    fill: var(--warn);
+    fill: var(--muted);
   }
 
   .ps-spine,
@@ -157,7 +157,7 @@
   }
 
   .ps-scan {
-    stroke: var(--good);
+    stroke: var(--accent);
     transform-box: view-box;
     transform-origin: 271px 158px;
     animation: ping 9s ease-out infinite;
@@ -195,17 +195,17 @@
   @keyframes tint {
     0%,
     40% {
-      stroke: var(--warn);
-      fill: var(--warn);
+      stroke: var(--muted);
+      fill: var(--muted);
     }
     52%,
     82% {
-      stroke: var(--good);
-      fill: var(--good);
+      stroke: var(--accent);
+      fill: var(--accent);
     }
     100% {
-      stroke: var(--warn);
-      fill: var(--warn);
+      stroke: var(--muted);
+      fill: var(--muted);
     }
   }
 
@@ -240,7 +240,7 @@
     width: min(17.5rem, 78%);
     padding: 0.75rem 0.9rem;
     border-radius: 14px;
-    background: color-mix(in oklab, var(--bg-elev) 82%, transparent);
+    background: color-mix(in oklab, var(--raised) 82%, transparent);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--line);
@@ -254,14 +254,14 @@
     width: 30px;
     height: 30px;
     border-radius: 8px;
-    background: var(--good);
+    background: var(--accent);
     display: grid;
     place-items: center;
   }
   .ps-nudge-icon svg {
     width: 17px;
     height: 17px;
-    stroke: var(--bg-elev);
+    stroke: var(--raised);
   }
 
   .ps-nudge-body {
@@ -319,21 +319,21 @@
   }
 
   .ps-state-slouch {
-    background: var(--warn-soft);
-    color: var(--warn);
+    background: var(--sunk);
+    color: var(--muted);
     animation: badge-bad 9s ease-in-out infinite;
   }
   .ps-state-slouch i {
-    background: var(--warn);
+    background: var(--muted);
   }
 
   .ps-state-upright {
-    background: var(--good-soft);
-    color: var(--good);
+    background: var(--accent-soft);
+    color: var(--accent);
     animation: badge-good 9s ease-in-out infinite;
   }
   .ps-state-upright i {
-    background: var(--good);
+    background: var(--accent);
   }
 
   @keyframes badge-bad {
@@ -381,10 +381,10 @@
     .ps-spine,
     .ps-arm,
     .ps-neck {
-      stroke: var(--good);
+      stroke: var(--accent);
     }
     .ps-skull {
-      fill: var(--good);
+      fill: var(--accent);
     }
     .ps-nudge {
       opacity: 1;

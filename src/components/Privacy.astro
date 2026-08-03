@@ -1,81 +1,51 @@
 ---
+import { stats } from '../data/stats';
 import { privacyPoints } from '../data/privacy';
-import { site } from '../config/site';
+
+/**
+ * Rule 3 — numbers instead of adjectives. "Private" is an adjective anyone can
+ * type; 0 bytes and 0 accounts are claims you can check against the source.
+ */
 ---
 
-<section class="ps-privacy ps-section" id="ps-privacy">
+<section class="ps-screen border-t border-line bg-sunk" id="ps-privacy">
   <div class="ps-shell">
-    <div class="ps-head">
-      <p class="ps-kicker">Privacy</p>
-      <h2>A camera app you can actually leave&nbsp;on.</h2>
-      <p class="ps-lede">
-        Pointing a webcam at yourself all day is a big ask, and it should be.
-        Posture is built so the honest answer to “where does the video go?” is
-        <em>nowhere</em> — it never leaves the frame buffer.
-      </p>
-    </div>
+    <p class="ps-kicker">Privacy</p>
+    <h2 class="mt-4 max-w-[22ch] text-[clamp(1.9rem,4.2vw,2.9rem)]">
+      A camera app you can leave on.
+    </h2>
+    <p class="mt-5 max-w-[46ch] text-[1.08rem] text-muted">
+      Pointing a webcam at yourself all day is a big ask, and it should be. Here
+      is the entire answer to “where does the video go?”
+    </p>
 
-    <div class="ps-grid">
+    <dl
+      class="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3"
+    >
       {
-        privacyPoints.map((p) => (
-          <article class="ps-point">
-            <h3>{p.title}</h3>
-            <p>{p.body}</p>
-          </article>
+        stats.map((stat) => (
+          <div class="bg-raised p-7">
+            <dt class="text-[3.4rem] leading-none font-semibold tracking-[-0.05em] text-accent tabular-nums">
+              {stat.value}
+            </dt>
+            <dd class="mt-2">
+              <p class="text-[1.02rem] font-semibold">{stat.label}</p>
+              <p class="mt-2 text-[0.92rem] text-muted">{stat.note}</p>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <div class="mt-8 grid gap-6 md:grid-cols-3">
+      {
+        privacyPoints.map((point) => (
+          <div>
+            <h3 class="text-[1.02rem]">{point.title}</h3>
+            <p class="mt-2 text-[0.94rem] text-muted">{point.body}</p>
+          </div>
         ))
       }
     </div>
-
-    <p class="ps-verify">
-      Posture is open source. If you would rather not take any of this on trust,
-      the camera and networking code is
-      <a href={site.repo} rel="noopener">right there to read</a>.
-    </p>
   </div>
 </section>
-
-<style>
-  .ps-privacy {
-    background: var(--bg-sunk);
-    border-block: 1px solid var(--line);
-  }
-
-  .ps-head {
-    max-width: 58ch;
-    margin-bottom: 3rem;
-  }
-  .ps-head .ps-lede {
-    margin-top: 1.1rem;
-    max-width: 54ch;
-  }
-  .ps-head em {
-    font-style: normal;
-    color: var(--good);
-    font-weight: 560;
-  }
-
-  .ps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    gap: 1rem;
-  }
-
-  .ps-point h3 {
-    margin-bottom: 0.5rem;
-  }
-  .ps-point p {
-    color: var(--muted);
-    font-size: 0.94rem;
-  }
-
-  .ps-verify {
-    margin-top: 2rem;
-    font-size: 0.94rem;
-    color: var(--muted);
-    max-width: 60ch;
-  }
-  .ps-verify a {
-    color: var(--good);
-    text-underline-offset: 3px;
-  }
-</style>
