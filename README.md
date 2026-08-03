@@ -9,7 +9,7 @@ repository currently holds the marketing site at
 
 ## The site
 
-Astro, no UI framework, no CSS framework — plain scoped styles and custom
+Astro 7, no UI framework, no CSS framework — plain scoped styles and custom
 properties. It builds to fully static HTML.
 
 ```bash
@@ -17,6 +17,36 @@ npm install
 npm run dev      # http://localhost:4321
 npm run build    # → dist/
 ```
+
+### TypeScript 7, side by side with 6
+
+TypeScript is installed twice, using the aliases the TypeScript 7 release notes
+recommend:
+
+```json
+"@typescript/native": "npm:typescript@^7.0.2",
+"typescript":         "npm:@typescript/typescript6@^6.0.2"
+```
+
+The native 7.x compiler is what `npx tsc` runs, and `npm run typecheck` uses it
+for the `.ts` sources. The bare `typescript` specifier resolves to the 6.0
+compatibility package, because `astro check`, `typescript-eslint` and Prettier
+all still call the TypeScript 6 programmatic API — the native compiler does not
+expose it yet. Drop the second alias and all three break at once.
+
+`npm run check` typechecks `.astro` files through that TS 6 API; `npm run
+typecheck` runs the native 7 compiler over the rest.
+
+### Checks
+
+```bash
+npm run format:check
+npm run lint
+npm run check       # .astro, via TS 6 API
+npm run typecheck   # .ts, native TS 7
+```
+
+All four gate every deploy.
 
 ### Layout
 

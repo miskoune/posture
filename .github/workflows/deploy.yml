@@ -17,6 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
+          # Astro 7 requires >=22.12
           node-version: 22
           cache: npm
 
@@ -25,14 +26,22 @@ jobs:
 
       # Quality gates run before the build, so a broken type or a lint error
       # never reaches production.
+      #
+      # TypeScript is installed twice on purpose (see package.json): the native
+      # 7.x compiler does the .ts typecheck, while `typescript` resolves to the
+      # @typescript/typescript6 compatibility package, because astro check,
+      # typescript-eslint and prettier all still need the TS 6 API.
       - name: Check formatting
         run: npm run format:check
 
       - name: Lint
         run: npm run lint
 
-      - name: Typecheck
+      - name: Typecheck .astro (TS 6 API)
         run: npm run check
+
+      - name: Typecheck .ts (native TS 7)
+        run: npm run typecheck
 
       - name: Build the project
         run: npm run build
