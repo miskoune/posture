@@ -227,9 +227,9 @@ final class PreviewWindowController: NSWindowController, NSWindowDelegate {
 
         if drift.exceeds(settings.tolerance) {
             let axis = drift.slump > drift.lean ? "sit up" : "sit back"
-            return ("Slouching — \(axis)", detail, warnColor)
+            return ("Bad posture — \(axis)", detail, warnColor)
         }
-        return ("Upright", detail, goodColor)
+        return ("Good posture", detail, goodColor)
     }
 
     private func setStatus(_ title: String, color: NSColor, detail: String) {
