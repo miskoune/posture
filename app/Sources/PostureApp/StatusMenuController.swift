@@ -10,7 +10,7 @@ final class StatusMenuController {
     /// What the user asked for. The delegate decides what it means.
     enum Command {
         case calibrate
-        case showPreview
+        case showDashboard
         case togglePause
         case setTolerance(Double)
         case setPatience(Double)
@@ -21,6 +21,8 @@ final class StatusMenuController {
     )
     private let stateItem = NSMenuItem(title: "Starting…", action: nil, keyEquivalent: "")
     private let pauseItem = NSMenuItem(title: "Pause", action: nil, keyEquivalent: "")
+    private var toleranceMenu: NSMenu?
+    private var patienceMenu: NSMenu?
 
     private let tolerances: [(label: String, value: Double)] = [
         ("Relaxed", 0.25),
@@ -128,6 +130,14 @@ final class StatusMenuController {
         menu.addItem(stateItem)
         menu.addItem(.separator())
 
+        let dashboard = NSMenuItem(
+            title: "Open Dashboard",
+            action: #selector(dashboardClicked),
+            keyEquivalent: ""
+        )
+        dashboard.target = self
+        menu.addItem(dashboard)
+
         let calibrate = NSMenuItem(
             title: "Calibrate — sit how you want to sit",
             action: #selector(calibrateClicked),
@@ -136,31 +146,28 @@ final class StatusMenuController {
         calibrate.target = self
         menu.addItem(calibrate)
 
-        let preview = NSMenuItem(
-            title: "Show Preview — see what it sees",
-            action: #selector(previewClicked),
-            keyEquivalent: ""
-        )
-        preview.target = self
-        menu.addItem(preview)
-
         pauseItem.action = #selector(pauseClicked)
         pauseItem.target = self
         menu.addItem(pauseItem)
 
         menu.addItem(.separator())
-        menu.addItem(choiceMenu(
+        let toleranceItem = choiceMenu(
             title: "Sensitivity",
             options: tolerances,
             current: tolerance,
             action: #selector(toleranceClicked(_:))
-        ))
-        menu.addItem(choiceMenu(
+        )
+        toleranceMenu = toleranceItem.submenu
+        menu.addItem(toleranceItem)
+
+        let patienceItem = choiceMenu(
             title: "Wait before nudging",
             options: patiences,
             current: patience,
             action: #selector(patienceClicked(_:))
-        ))
+        )
+        patienceMenu = patienceItem.submenu
+        menu.addItem(patienceItem)
 
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(
@@ -200,8 +207,20 @@ final class StatusMenuController {
         onCommand?(.calibrate)
     }
 
-    @objc private func previewClicked() {
-        onCommand?(.showPreview)
+    @objc private func dashboardClicked() {
+        onCommand?(.showDashboard)
+    }
+
+    /// Reflects values changed elsewhere (the dashboard) in the checkmarks.
+    func syncChoices(tolerance: Double, patience: TimeInterval) {
+        tick(value: tolerance, in: toleranceMenu)
+        tick(value: patience, in: patienceMenu)
+    }
+
+    private func tick(value: Double, in menu: NSMenu?) {
+        menu?.items.forEach {
+            $0.state = (($0.representedObject as? Double) == value) ? .on : .off
+        }
     }
 
     @objc private func pauseClicked() {

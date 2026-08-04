@@ -11,7 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Built in `applicationDidFinishLaunching`, never in `init`: an
     /// NSStatusItem may only be created once NSApplication is up.
     private var menu: StatusMenuController?
-    private var preview: PreviewWindowController?
+    private var dashboard: DashboardWindowController?
     private var timer: Timer?
     private var timerInterval: TimeInterval = 0
 
@@ -40,7 +40,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.handle(command)
         }
         self.menu = menu
-        preview = PreviewWindowController(settings: settings)
+
+        let dashboard = DashboardWindowController(settings: settings, monitor: monitor)
+        dashboard.onCommand = { [weak self] command in
+            self?.handle(command)
+        }
+        self.dashboard = dashboard
 
         monitor.onStateChange = { [weak self] state in
             self?.render(state)
@@ -112,21 +117,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         switch command {
         case .calibrate:
             monitor.beginCalibration()
-        case .showPreview:
-            preview?.show()
+        case .showDashboard:
+            dashboard?.show()
         case .togglePause:
             monitor.setPaused(!settings.isPaused)
             render(monitor.state)
         case .setTolerance(let value):
             settings.tolerance = value
+            menu?.syncChoices(tolerance: settings.tolerance, patience: settings.patience)
         case .setPatience(let value):
             settings.patience = value
+            menu?.syncChoices(tolerance: settings.tolerance, patience: settings.patience)
         }
     }
 
     private func render(_ state: PostureState) {
         menu?.render(state, isPaused: settings.isPaused)
-        preview?.monitorState = state
         retuneTimer(for: state)
     }
 }

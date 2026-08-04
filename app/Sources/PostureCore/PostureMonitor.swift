@@ -9,14 +9,19 @@ public final class PostureMonitor {
     private let nudger: NudgeDelivering
     private let settings: SettingsStoring
     private let tracker: SlouchTracker
+    private let clock: Clock
 
     private var calibration: Calibration?
 
     public var onStateChange: ((PostureState) -> Void)?
 
+    /// This session's time in and out of good posture.
+    public private(set) var tally = PostureTally()
+
     public private(set) var state: PostureState {
         didSet {
             guard state != oldValue else { return }
+            tally.transition(to: state, at: clock.now)
             onStateChange?(state)
         }
     }
@@ -31,7 +36,11 @@ public final class PostureMonitor {
         self.nudger = nudger
         self.settings = settings
         self.tracker = SlouchTracker(clock: clock)
+        self.clock = clock
         self.state = Self.initialState(for: settings)
+        // didSet does not fire during init, so open the first bucket by hand
+        // — otherwise time before the first state change counts nowhere.
+        tally.transition(to: state, at: clock.now)
     }
 
     private static func initialState(for settings: SettingsStoring) -> PostureState {
