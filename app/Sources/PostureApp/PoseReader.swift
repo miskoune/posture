@@ -18,7 +18,11 @@ struct PoseReader {
 
     func read(_ pixelBuffer: CVPixelBuffer) -> SensorOutcome {
         let request = VNDetectHumanBodyPoseRequest()
-        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up)
+        let handler = VNImageRequestHandler(
+            cvPixelBuffer: pixelBuffer,
+            orientation: .up,
+            options: [:]
+        )
 
         do {
             try handler.perform([request])
