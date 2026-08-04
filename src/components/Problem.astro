@@ -7,14 +7,16 @@
 ---
 
 <section class="ps-screen border-t border-line bg-sunk">
-  <div class="ps-shell max-w-[46rem]">
+  <!-- Full shell so the left edge lines up with the header; the reading
+       measure is capped per element instead of by re-centring the shell. -->
+  <div class="ps-shell">
     <p class="ps-kicker">The problem</p>
 
-    <h2 class="mt-4 text-[clamp(1.9rem,4.2vw,2.9rem)]">
-      Nobody decides to slouch.
+    <h2 class="mt-4 max-w-[24ch] text-[clamp(1.9rem,4.2vw,2.9rem)]">
+      Nobody decides to sit badly.
     </h2>
 
-    <div class="mt-8 space-y-6 text-[1.08rem] text-muted">
+    <div class="mt-8 max-w-[62ch] space-y-6 text-[1.08rem] text-muted">
       <p>
         At nine your back is against the chair. At eleven you lean in to read
         something small and forget to lean out. By three your chin is past your

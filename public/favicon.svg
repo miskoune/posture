@@ -1,6 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-     stroke="#0f9d6e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="12" cy="4.6" r="2.3" fill="#0f9d6e" stroke="none"/>
-  <path d="M12 21V9"/>
-  <path d="M8 12l4-4 4 4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="stone" x1="0.24" y1="0" x2="0.76" y2="1">
+      <stop offset="0" stop-color="#fdfbf4"/>
+      <stop offset="0.45" stop-color="#d9d6c6"/>
+      <stop offset="1" stop-color="#7a836a"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#stone)"/>
+  <circle cx="50" cy="27" r="10" fill="#17191c"/>
+  <path d="M50 41 V64 M50 47.5 L36 57 M50 47.5 L64 57 M50 64 L39 83 M50 64 L61 83"
+        stroke="#17191c" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>

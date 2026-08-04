@@ -37,16 +37,14 @@ const year = new Date().getFullYear();
   <div
     class="ps-shell flex flex-wrap items-center justify-between gap-4 text-[0.86rem] text-muted"
   >
+    <!-- Spacing lives in the strings: Astro drops newline-only whitespace
+         between expressions, which once rendered "2026Posture". -->
     <p>
-      © {year}
-      {site.name} · built by
-      <a
+      {`© ${year} ${site.name} · built by `}<a
         class="underline underline-offset-2 hover:text-ink"
         href={site.author}
-        rel="noopener"
-      >
-        @miskoune
-      </a> in Paris
+        rel="noopener">@miskoune</a
+      >{' in Paris'}
     </p>
 
     <nav class="flex gap-6" aria-label="Footer">

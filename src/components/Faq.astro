@@ -3,13 +3,15 @@ import { faqs } from '../data/faq';
 ---
 
 <section class="ps-screen" id="ps-faq">
-  <div class="ps-shell max-w-[46rem]">
+  <!-- Full shell so the left edge lines up with the header; the accordion
+       keeps its comfortable width via its own cap. -->
+  <div class="ps-shell">
     <p class="ps-kicker">Questions</p>
-    <h2 class="mt-4 text-[clamp(1.9rem,4.2vw,2.9rem)]">
+    <h2 class="mt-4 max-w-[24ch] text-[clamp(1.9rem,4.2vw,2.9rem)]">
       Reasonable suspicions, answered.
     </h2>
 
-    <div class="mt-12 border-t border-line">
+    <div class="mt-12 max-w-[46rem] border-t border-line">
       {
         faqs.map((faq, i) => (
           <details

@@ -4,16 +4,16 @@ export const site: SiteConfig = {
   name: 'Posture',
 
   /** Rule 30 — the whole product in nine words. */
-  tagline: 'a Mac app that tells you when you slouch',
+  tagline: 'a Mac app that tells you when your posture goes bad',
 
   /** Rule 18 — the headline is the product. Reading it makes you sit up,
    *  which is the entire loop demonstrated before a feature is named. */
-  headline: 'You are slouching right now.',
+  headline: 'Your posture is bad right now.',
   subhead:
     'Your Mac already has a camera pointed at your face. Posture uses it to catch the slow slide forward, says one thing, then shuts up.',
 
   description:
-    'A Mac menu bar app that tells you when you slouch. The camera feed never leaves the Mac: 0 bytes uploaded, 0 accounts, 1 nudge. Free and open source.',
+    'A Mac menu bar app that tells you when your posture goes bad. The camera feed never leaves the Mac: 0 bytes uploaded, 0 accounts, 1 nudge. Free and open source.',
 
   url: 'https://posture.miskoune.com',
   repo: 'https://github.com/miskoune/posture',

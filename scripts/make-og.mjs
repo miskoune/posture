@@ -19,10 +19,10 @@ const root = join(here, '..');
 const W = 1200;
 const H = 630;
 
-const INK = '#0c0f0e';
-const MUTED = '#9aa39d';
-const ACCENT = '#0f9d6e';
-const PAPER = '#ffffff';
+const INK = '#17191c';
+const MUTED = '#8a8f7e';
+const SAGE = '#7a836a';
+const PAPER = '#faf8f1';
 
 /** One side-profile figure: spine, arm, neck, skull. */
 const figure = (color, slouched) => {
@@ -43,28 +43,28 @@ const figure = (color, slouched) => {
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <rect width="${W}" height="${H}" fill="${PAPER}"/>
 
-  <!-- the one accent colour, used once -->
-  <circle cx="1040" cy="120" r="230" fill="${ACCENT}" opacity="0.07"/>
+  <!-- the icon's stone sage, used once as a quiet wash -->
+  <circle cx="1040" cy="120" r="230" fill="${SAGE}" opacity="0.14"/>
 
   <g font-family="Inter" fill="${INK}">
     <text x="80" y="150" font-size="26" font-weight="600"
           letter-spacing="4" fill="${MUTED}">POSTURE · FREE · MIT</text>
 
     <text x="80" y="290" font-size="86" font-weight="700"
-          letter-spacing="-3.5">You are slouching</text>
+          letter-spacing="-3.5">Your posture is bad</text>
     <text x="80" y="386" font-size="86" font-weight="700"
-          letter-spacing="-3.5" fill="${ACCENT}">right now.</text>
+          letter-spacing="-3.5" fill="${SAGE}">right now.</text>
 
-    <text x="80" y="470" font-size="30" font-weight="450" fill="${MUTED}">A Mac app that tells you when you slouch.</text>
+    <text x="80" y="470" font-size="30" font-weight="450" fill="${MUTED}">A Mac app that tells you when your posture goes bad.</text>
     <text x="80" y="556" font-size="26" font-weight="500" fill="${MUTED}">0 bytes uploaded · 0 accounts · 1 nudge</text>
   </g>
 
   <!-- before / after, in the two colours the app itself uses -->
-  <g transform="translate(628 208) scale(1.36)">
+  <g transform="translate(680 196) scale(1.36)">
     ${figure(MUTED, true)}
   </g>
-  <g transform="translate(854 208) scale(1.36)">
-    ${figure(ACCENT, false)}
+  <g transform="translate(906 196) scale(1.36)">
+    ${figure(INK, false)}
   </g>
 </svg>`;
 

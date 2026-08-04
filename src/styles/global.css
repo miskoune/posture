@@ -18,36 +18,40 @@
  * pull the eye, and it is spent on the single call to action.
  */
 
+/* The palette is the app icon's: warm ivory stone, near-black ink, and the
+ * sage-to-moss green the squircle fades into. */
 :root {
   color-scheme: light dark;
 
-  --paper: #ffffff;
-  --raised: #ffffff;
-  --sunk: #f5f6f4;
-  --ink: #0c0f0e;
-  --muted: #5e6862;
-  --line: #e5e8e4;
-  --line-strong: #cfd4cf;
-  --accent: #0f9d6e;
-  --accent-soft: #e2f4ec;
-  --accent-ink: #ffffff;
+  --paper: #faf8f1;
+  --raised: #fffefa;
+  --sunk: #f1eee2;
+  --ink: #17191c;
+  --muted: #676e60;
+  --line: #e6e2d3;
+  --line-strong: #cfc9b6;
+  /* Monochrome on purpose: the accent is ink itself, so the only colour on
+   * the page is the stone gradient inside the logo. */
+  --accent: #17191c;
+  --accent-soft: #eae7da;
+  --accent-ink: #faf8f1;
 
-  --shadow-sm: 0 1px 2px rgb(12 15 14 / 0.06), 0 1px 8px rgb(12 15 14 / 0.04);
-  --shadow-lg: 0 12px 40px rgb(12 15 14 / 0.1), 0 2px 8px rgb(12 15 14 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(23 25 20 / 0.06), 0 1px 8px rgb(23 25 20 / 0.04);
+  --shadow-lg: 0 12px 40px rgb(23 25 20 / 0.12), 0 2px 8px rgb(23 25 20 / 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #0a0c0b;
-    --raised: #121615;
-    --sunk: #0f1211;
-    --ink: #eaeeeb;
-    --muted: #929c96;
-    --line: #1f2523;
-    --line-strong: #333b38;
-    --accent: #37d39b;
-    --accent-soft: #0e2a21;
-    --accent-ink: #06120d;
+    --paper: #121410;
+    --raised: #1a1d16;
+    --sunk: #161913;
+    --ink: #edeadf;
+    --muted: #99a08b;
+    --line: #262a1f;
+    --line-strong: #3a4030;
+    --accent: #edeadf;
+    --accent-soft: #22261c;
+    --accent-ink: #121410;
 
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 16px 50px rgb(0 0 0 / 0.55);

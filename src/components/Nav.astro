@@ -26,18 +26,25 @@ const links = [
       class="flex items-center gap-2 text-[1.02rem] font-semibold tracking-tight no-underline"
       href="/"
     >
-      <svg
-        class="h-5 w-5 stroke-accent"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke-width="2.3"
-        stroke-linecap="round"
-        aria-hidden="true"
-      >
-        <path d="M12 21V9"></path><path d="M8 12l4-4 4 4"></path><circle
-          cx="12"
-          cy="4.5"
-          r="2.2"></circle>
+      <!-- the app icon: the little man engraved in stone -->
+      <svg class="h-6 w-6" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient id="ps-stone" x1="0.24" y1="0" x2="0.76" y2="1">
+            <stop offset="0" stop-color="#fdfbf4"></stop>
+            <stop offset="0.45" stop-color="#d9d6c6"></stop>
+            <stop offset="1" stop-color="#7a836a"></stop>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#ps-stone)"
+        ></rect>
+        <circle cx="50" cy="27" r="10" fill="#17191c"></circle>
+        <path
+          d="M50 41 V64 M50 47.5 L36 57 M50 47.5 L64 57 M50 64 L39 83 M50 64 L61 83"
+          stroke="#17191c"
+          stroke-width="10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          fill="none"></path>
       </svg>
       {site.name}
     </a>
