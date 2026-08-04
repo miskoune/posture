@@ -29,6 +29,11 @@ final class CameraSensor: NSObject, PostureSensor, AVCaptureVideoDataOutputSampl
     private var pending: ((SensorOutcome) -> Void)?
     private var isConfigured = false
 
+    /// Which sample the armed timeout belongs to. A timeout may only cancel
+    /// its own sample — without this, sample N's stale timeout fires just as
+    /// sample N+1 begins (both run on the same interval) and kills it.
+    private var sampleGeneration = 0
+
     /// Asks the user once. macOS remembers the answer; we never ask again.
     static func requestAccess(_ completion: @escaping (Bool) -> Void) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -67,6 +72,8 @@ final class CameraSensor: NSObject, PostureSensor, AVCaptureVideoDataOutputSampl
 
     private func begin(_ completion: @escaping (SensorOutcome) -> Void) {
         pending = completion
+        sampleGeneration += 1
+        let thisSample = sampleGeneration
 
         if session.isRunning {
             // The stream is warm; the next frame is representative.
@@ -80,7 +87,8 @@ final class CameraSensor: NSObject, PostureSensor, AVCaptureVideoDataOutputSampl
         // Answer even if no frame ever arrives, so the monitor is not stuck
         // waiting on a completion forever.
         queue.asyncAfter(deadline: .now() + frameTimeout) { [weak self] in
-            self?.finish(with: .unavailable(reason: "No frame from the camera"))
+            guard let self, self.sampleGeneration == thisSample else { return }
+            self.finish(with: .unavailable(reason: "No frame from the camera"))
         }
     }
 
