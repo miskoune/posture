@@ -28,9 +28,13 @@ public extension PostureSensor {
     func rest() {}
 }
 
-/// Anything that can tell the user to sit back.
+/// Anything that can tell the user to sit back — and take it back once the
+/// complaint no longer applies.
 public protocol NudgeDelivering: AnyObject {
     func deliverNudge(minutesSlouching: Int)
+
+    /// The slouch the nudge complained about is over; withdraw it.
+    func clearNudges()
 }
 
 /// Where preferences and the calibrated baseline live.
@@ -38,6 +42,9 @@ public protocol SettingsStoring: AnyObject {
     var baseline: Baseline? { get set }
     var tolerance: Double { get set }
     var patience: TimeInterval { get set }
+    /// Seconds between repeat nudges while posture stays bad; 0 means nudge
+    /// once per slouch and stay quiet.
+    var nudgeRepeat: TimeInterval { get set }
     var sampleInterval: TimeInterval { get set }
     var isPaused: Bool { get set }
 }

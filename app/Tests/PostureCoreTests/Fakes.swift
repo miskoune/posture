@@ -27,9 +27,14 @@ final class FakeSensor: PostureSensor {
 
 final class FakeNudger: NudgeDelivering {
     private(set) var nudges: [Int] = []
+    private(set) var clearCount = 0
 
     func deliverNudge(minutesSlouching: Int) {
         nudges.append(minutesSlouching)
+    }
+
+    func clearNudges() {
+        clearCount += 1
     }
 }
 
@@ -37,6 +42,7 @@ final class FakeSettings: SettingsStoring {
     var baseline: Baseline?
     var tolerance: Double = 0.15
     var patience: TimeInterval = 120
+    var nudgeRepeat: TimeInterval = 0
     var sampleInterval: TimeInterval = 5
     var isPaused = false
 

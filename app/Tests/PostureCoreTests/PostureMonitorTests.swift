@@ -130,6 +130,55 @@ final class PostureMonitorTests: XCTestCase {
         )
     }
 
+    func testSittingUpWithdrawsTheNudge() {
+        let settings = FakeSettings(baseline: .upright)
+        let (monitor, sensor, nudger, clock) = makeMonitor(settings: settings)
+
+        sensor.nextOutcome = slouched
+        monitor.sampleNow()
+        clock.advance(seconds: 130)
+        monitor.sampleNow()
+        XCTAssertEqual(nudger.nudges, [2])
+        XCTAssertEqual(nudger.clearCount, 0)
+
+        sensor.nextOutcome = goodPosture
+        monitor.sampleNow()
+
+        XCTAssertEqual(nudger.clearCount, 1)
+    }
+
+    func testSteppingAwayLeavesTheNudgeStanding() {
+        let settings = FakeSettings(baseline: .upright)
+        let (monitor, sensor, nudger, clock) = makeMonitor(settings: settings)
+
+        sensor.nextOutcome = slouched
+        monitor.sampleNow()
+        clock.advance(seconds: 130)
+        monitor.sampleNow()
+
+        sensor.nextOutcome = .noPersonVisible
+        monitor.sampleNow()
+
+        XCTAssertEqual(
+            nudger.clearCount, 0,
+            "losing sight of the user is not the end of the slouch"
+        )
+    }
+
+    func testPausingWithdrawsTheNudge() {
+        let settings = FakeSettings(baseline: .upright)
+        let (monitor, sensor, nudger, clock) = makeMonitor(settings: settings)
+
+        sensor.nextOutcome = slouched
+        monitor.sampleNow()
+        clock.advance(seconds: 130)
+        monitor.sampleNow()
+
+        monitor.setPaused(true)
+
+        XCTAssertEqual(nudger.clearCount, 1, "a paused app has no opinion to display")
+    }
+
     func testCalibratingClearsAnActiveSlouch() {
         let settings = FakeSettings(baseline: .upright)
         let (monitor, sensor, nudger, clock) = makeMonitor(settings: settings)

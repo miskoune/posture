@@ -34,7 +34,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         let menu = StatusMenuController(
             tolerance: settings.tolerance,
-            patience: settings.patience
+            patience: settings.patience,
+            nudgeRepeat: settings.nudgeRepeat
         )
         menu.onCommand = { [weak self] command in
             self?.handle(command)
@@ -124,11 +125,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             render(monitor.state)
         case .setTolerance(let value):
             settings.tolerance = value
-            menu?.syncChoices(tolerance: settings.tolerance, patience: settings.patience)
+            syncMenuChoices()
         case .setPatience(let value):
             settings.patience = value
-            menu?.syncChoices(tolerance: settings.tolerance, patience: settings.patience)
+            syncMenuChoices()
+        case .setNudgeRepeat(let value):
+            settings.nudgeRepeat = value
+            syncMenuChoices()
         }
+    }
+
+    private func syncMenuChoices() {
+        menu?.syncChoices(
+            tolerance: settings.tolerance,
+            patience: settings.patience,
+            nudgeRepeat: settings.nudgeRepeat
+        )
     }
 
     private func render(_ state: PostureState) {

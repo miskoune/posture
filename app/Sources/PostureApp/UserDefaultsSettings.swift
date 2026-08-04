@@ -10,6 +10,7 @@ final class UserDefaultsSettings: SettingsStoring {
         static let baseline = "baseline"
         static let tolerance = "tolerance"
         static let patience = "patience"
+        static let nudgeRepeat = "nudgeRepeat"
         static let sampleInterval = "sampleInterval"
         static let paused = "paused"
     }
@@ -17,7 +18,8 @@ final class UserDefaultsSettings: SettingsStoring {
     /// Defaults live here rather than scattered through the code that reads
     /// them, so there is one place to answer "how strict is it out of the box?"
     static let defaultTolerance = 0.15
-    static let defaultPatience: TimeInterval = 120
+    static let defaultPatience: TimeInterval = 60
+    static let defaultNudgeRepeat: TimeInterval = 300
     static let defaultSampleInterval: TimeInterval = 5
 
     private let defaults: UserDefaults
@@ -27,6 +29,7 @@ final class UserDefaultsSettings: SettingsStoring {
         defaults.register(defaults: [
             Key.tolerance: Self.defaultTolerance,
             Key.patience: Self.defaultPatience,
+            Key.nudgeRepeat: Self.defaultNudgeRepeat,
             Key.sampleInterval: Self.defaultSampleInterval,
             Key.paused: false
         ])
@@ -57,6 +60,12 @@ final class UserDefaultsSettings: SettingsStoring {
     var patience: TimeInterval {
         get { defaults.double(forKey: Key.patience) }
         set { defaults.set(newValue, forKey: Key.patience) }
+    }
+
+    /// Seconds between repeat nudges while the slouch continues; 0 means once.
+    var nudgeRepeat: TimeInterval {
+        get { defaults.double(forKey: Key.nudgeRepeat) }
+        set { defaults.set(newValue, forKey: Key.nudgeRepeat) }
     }
 
     /// Seconds between camera samples.

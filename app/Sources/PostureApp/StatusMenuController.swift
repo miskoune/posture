@@ -14,6 +14,7 @@ final class StatusMenuController {
         case togglePause
         case setTolerance(Double)
         case setPatience(Double)
+        case setNudgeRepeat(Double)
     }
 
     private let statusItem = NSStatusBar.system.statusItem(
@@ -23,6 +24,7 @@ final class StatusMenuController {
     private let pauseItem = NSMenuItem(title: "Pause", action: nil, keyEquivalent: "")
     private var toleranceMenu: NSMenu?
     private var patienceMenu: NSMenu?
+    private var nudgeRepeatMenu: NSMenu?
 
     private let tolerances: [(label: String, value: Double)] = [
         ("Relaxed", 0.25),
@@ -31,16 +33,27 @@ final class StatusMenuController {
     ]
 
     private let patiences: [(label: String, value: Double)] = [
+        ("10 seconds", 10),
         ("30 seconds", 30),
+        ("1 minute", 60),
         ("2 minutes", 120),
         ("5 minutes", 300),
         ("15 minutes", 900)
     ]
 
+    private let nudgeRepeats: [(label: String, value: Double)] = [
+        ("Only once", 0),
+        ("Every 30 seconds", 30),
+        ("Every minute", 60),
+        ("Every 2 minutes", 120),
+        ("Every 5 minutes", 300),
+        ("Every 10 minutes", 600)
+    ]
+
     var onCommand: ((Command) -> Void)?
 
-    init(tolerance: Double, patience: TimeInterval) {
-        buildMenu(tolerance: tolerance, patience: patience)
+    init(tolerance: Double, patience: TimeInterval, nudgeRepeat: TimeInterval) {
+        buildMenu(tolerance: tolerance, patience: patience, nudgeRepeat: nudgeRepeat)
     }
 
     // MARK: - Rendering
@@ -124,7 +137,11 @@ final class StatusMenuController {
 
     // MARK: - Building
 
-    private func buildMenu(tolerance: Double, patience: TimeInterval) {
+    private func buildMenu(
+        tolerance: Double,
+        patience: TimeInterval,
+        nudgeRepeat: TimeInterval
+    ) {
         let menu = NSMenu()
 
         menu.addItem(stateItem)
@@ -161,13 +178,22 @@ final class StatusMenuController {
         menu.addItem(toleranceItem)
 
         let patienceItem = choiceMenu(
-            title: "Wait before nudging",
+            title: "Wait before notifying",
             options: patiences,
             current: patience,
             action: #selector(patienceClicked(_:))
         )
         patienceMenu = patienceItem.submenu
         menu.addItem(patienceItem)
+
+        let nudgeRepeatItem = choiceMenu(
+            title: "Remind again while bad",
+            options: nudgeRepeats,
+            current: nudgeRepeat,
+            action: #selector(nudgeRepeatClicked(_:))
+        )
+        nudgeRepeatMenu = nudgeRepeatItem.submenu
+        menu.addItem(nudgeRepeatItem)
 
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(
@@ -212,9 +238,10 @@ final class StatusMenuController {
     }
 
     /// Reflects values changed elsewhere (the dashboard) in the checkmarks.
-    func syncChoices(tolerance: Double, patience: TimeInterval) {
+    func syncChoices(tolerance: Double, patience: TimeInterval, nudgeRepeat: TimeInterval) {
         tick(value: tolerance, in: toleranceMenu)
         tick(value: patience, in: patienceMenu)
+        tick(value: nudgeRepeat, in: nudgeRepeatMenu)
     }
 
     private func tick(value: Double, in menu: NSMenu?) {
@@ -237,6 +264,12 @@ final class StatusMenuController {
         guard let value = sender.representedObject as? Double else { return }
         tick(sender)
         onCommand?(.setPatience(value))
+    }
+
+    @objc private func nudgeRepeatClicked(_ sender: NSMenuItem) {
+        guard let value = sender.representedObject as? Double else { return }
+        tick(sender)
+        onCommand?(.setNudgeRepeat(value))
     }
 
     private func tick(_ sender: NSMenuItem) {

@@ -1,16 +1,26 @@
 import Foundation
 
 /// The rule a reading is judged against: the calibrated pose, how far you may
-/// stray from it, and how long you may stray before it says anything.
+/// stray from it, how long you may stray before it says anything, and how
+/// often it may repeat itself while you keep straying.
 public struct PostureRule: Equatable {
     public let baseline: Baseline
     public let tolerance: Double
     public let patience: TimeInterval
+    /// Seconds between reminders while the slouch continues. `nil` means say
+    /// it once and hold your peace until the user sits up.
+    public let repeatEvery: TimeInterval?
 
-    public init(baseline: Baseline, tolerance: Double, patience: TimeInterval) {
+    public init(
+        baseline: Baseline,
+        tolerance: Double,
+        patience: TimeInterval,
+        repeatEvery: TimeInterval? = nil
+    ) {
         self.baseline = baseline
         self.tolerance = tolerance
         self.patience = patience
+        self.repeatEvery = repeatEvery
     }
 }
 
@@ -24,15 +34,15 @@ public struct Verdict: Equatable {
     public var shouldNudge: Bool { nudgeAfterMinutes != nil }
 }
 
-/// Decides when a slouch has lasted long enough to deserve the one banner.
+/// Decides when a slouch has lasted long enough to deserve a banner.
 ///
 /// Pure decision logic: no camera, no notifications, no timers. It holds only
 /// the two facts that cannot be recomputed from a single reading — when the
-/// current slouch began, and whether this slouch has already been mentioned.
+/// current slouch began, and when it was last mentioned.
 public final class SlouchTracker {
     private let clock: Clock
     private var slouchStartedAt: Date?
-    private var alreadyNudged = false
+    private var lastNudgedAt: Date?
 
     public init(clock: Clock) {
         self.clock = clock
@@ -42,7 +52,7 @@ public final class SlouchTracker {
     /// user is never nudged for a posture the app was told to stop judging.
     public func reset() {
         slouchStartedAt = nil
-        alreadyNudged = false
+        lastNudgedAt = nil
     }
 
     public func evaluate(_ outcome: SensorOutcome, against rule: PostureRule) -> Verdict {
@@ -72,19 +82,24 @@ public final class SlouchTracker {
 
         return Verdict(
             state: .slouching(since: since),
-            nudgeAfterMinutes: overdueMinutes(since: since, patience: rule.patience)
+            nudgeAfterMinutes: overdueMinutes(since: since, rule: rule)
         )
     }
 
-    /// The nudge fires once per slouch. Sitting up and slouching again earns a
-    /// new one; staying folded over does not.
-    private func overdueMinutes(since: Date, patience: TimeInterval) -> Int? {
-        guard !alreadyNudged else { return nil }
+    /// The first nudge fires once patience runs out. After that, the rule's
+    /// `repeatEvery` decides whether staying folded over earns reminders or
+    /// silence; sitting up always re-arms the first nudge.
+    private func overdueMinutes(since: Date, rule: PostureRule) -> Int? {
+        guard clock.now.timeIntervalSince(since) >= rule.patience else { return nil }
+        guard isDueForAnotherNudge(rule: rule) else { return nil }
 
-        let elapsed = clock.now.timeIntervalSince(since)
-        guard elapsed >= patience else { return nil }
+        lastNudgedAt = clock.now
+        return max(1, Int(clock.now.timeIntervalSince(since) / 60))
+    }
 
-        alreadyNudged = true
-        return max(1, Int(elapsed / 60))
+    private func isDueForAnotherNudge(rule: PostureRule) -> Bool {
+        guard let lastNudgedAt else { return true }
+        guard let repeatEvery = rule.repeatEvery else { return false }
+        return clock.now.timeIntervalSince(lastNudgedAt) >= repeatEvery
     }
 }

@@ -21,8 +21,23 @@ public final class PostureMonitor {
     public private(set) var state: PostureState {
         didSet {
             guard state != oldValue else { return }
+            clearNudgesIfSlouchEnded(oldValue)
             tally.transition(to: state, at: clock.now)
             onStateChange?(state)
+        }
+    }
+
+    /// A delivered nudge complains about a slouch; the moment the app stops
+    /// believing in that slouch, the complaint is withdrawn. Losing sight of
+    /// the user is not the end of the slouch — the tracker holds its clock
+    /// through those states, so the nudge stands too.
+    private func clearNudgesIfSlouchEnded(_ oldState: PostureState) {
+        guard case .slouching = oldState else { return }
+        switch state {
+        case .cannotSee, .unavailable:
+            break
+        default:
+            nudger.clearNudges()
         }
     }
 
@@ -93,7 +108,8 @@ public final class PostureMonitor {
         let rule = PostureRule(
             baseline: baseline,
             tolerance: settings.tolerance,
-            patience: settings.patience
+            patience: settings.patience,
+            repeatEvery: settings.nudgeRepeat > 0 ? settings.nudgeRepeat : nil
         )
 
         let verdict = tracker.evaluate(outcome, against: rule)

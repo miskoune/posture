@@ -25,6 +25,7 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
     private let badTimeValue = NSTextField(labelWithString: "0s")
     private let tolerancePopup = NSPopUpButton()
     private let patiencePopup = NSPopUpButton()
+    private let nudgeRepeatPopup = NSPopUpButton()
     private let pauseButton = NSButton(title: "Pause", target: nil, action: nil)
 
     private var statsTimer: Timer?
@@ -49,10 +50,21 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
     ]
 
     private let patiences: [(label: String, value: Double)] = [
+        ("10 seconds", 10),
         ("30 seconds", 30),
+        ("1 minute", 60),
         ("2 minutes", 120),
         ("5 minutes", 300),
         ("15 minutes", 900)
+    ]
+
+    private let nudgeRepeats: [(label: String, value: Double)] = [
+        ("Only once", 0),
+        ("Every 30 seconds", 30),
+        ("Every minute", 60),
+        ("Every 2 minutes", 120),
+        ("Every 5 minutes", 300),
+        ("Every 10 minutes", 600)
     ]
 
     init(settings: SettingsStoring, monitor: PostureMonitor) {
@@ -175,7 +187,8 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
 
         for (popup, options, current) in [
             (tolerancePopup, tolerances, settings.tolerance),
-            (patiencePopup, patiences, settings.patience)
+            (patiencePopup, patiences, settings.patience),
+            (nudgeRepeatPopup, nudgeRepeats, settings.nudgeRepeat)
         ] {
             for option in options {
                 popup.addItem(withTitle: option.label)
@@ -186,6 +199,7 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
         }
         tolerancePopup.action = #selector(toleranceChanged(_:))
         patiencePopup.action = #selector(patienceChanged(_:))
+        nudgeRepeatPopup.action = #selector(nudgeRepeatChanged(_:))
 
         let calibrateButton = NSButton(
             title: "Calibrate",
@@ -209,8 +223,10 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
             separator(),
             sectionLabel("SENSITIVITY"),
             tolerancePopup,
-            sectionLabel("WAIT BEFORE NUDGING"),
+            sectionLabel("WAIT BEFORE NOTIFYING"),
             patiencePopup,
+            sectionLabel("REMIND AGAIN WHILE BAD"),
+            nudgeRepeatPopup,
             separator(),
             calibrateButton,
             pauseButton
@@ -219,7 +235,7 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
         stack.alignment = .leading
         stack.spacing = 10
         stack.setCustomSpacing(4, after: statusLabel)
-        for view in [tolerancePopup, patiencePopup, calibrateButton, pauseButton] {
+        for view in [tolerancePopup, patiencePopup, nudgeRepeatPopup, calibrateButton, pauseButton] {
             view.translatesAutoresizingMaskIntoConstraints = false
             view.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
         }
@@ -259,6 +275,7 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
         pauseButton.title = settings.isPaused ? "Resume" : "Pause"
         select(value: settings.tolerance, in: tolerancePopup)
         select(value: settings.patience, in: patiencePopup)
+        select(value: settings.nudgeRepeat, in: nudgeRepeatPopup)
     }
 
     private func select(value: Double, in popup: NSPopUpButton) {
@@ -296,6 +313,11 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
     @objc private func patienceChanged(_ sender: NSPopUpButton) {
         guard let value = sender.selectedItem?.representedObject as? Double else { return }
         onCommand?(.setPatience(value))
+    }
+
+    @objc private func nudgeRepeatChanged(_ sender: NSPopUpButton) {
+        guard let value = sender.selectedItem?.representedObject as? Double else { return }
+        onCommand?(.setNudgeRepeat(value))
     }
 
     // MARK: - Rendering
