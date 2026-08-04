@@ -10,6 +10,7 @@ final class StatusMenuController {
     /// What the user asked for. The delegate decides what it means.
     enum Command {
         case calibrate
+        case showPreview
         case togglePause
         case setTolerance(Double)
         case setPatience(Double)
@@ -92,6 +93,14 @@ final class StatusMenuController {
         calibrate.target = self
         menu.addItem(calibrate)
 
+        let preview = NSMenuItem(
+            title: "Show Preview — see what it sees",
+            action: #selector(previewClicked),
+            keyEquivalent: ""
+        )
+        preview.target = self
+        menu.addItem(preview)
+
         pauseItem.action = #selector(pauseClicked)
         pauseItem.target = self
         menu.addItem(pauseItem)
@@ -146,6 +155,10 @@ final class StatusMenuController {
 
     @objc private func calibrateClicked() {
         onCommand?(.calibrate)
+    }
+
+    @objc private func previewClicked() {
+        onCommand?(.showPreview)
     }
 
     @objc private func pauseClicked() {

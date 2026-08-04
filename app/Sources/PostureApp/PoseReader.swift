@@ -1,23 +1,56 @@
+import CoreGraphics
 import CoreVideo
 import Foundation
 import PostureCore
 import Vision
 
-/// Turns one camera frame into a `Reading`, using Vision's body pose model.
+/// Where the face was found, in Vision's normalised coordinates (origin
+/// bottom-left). Only the preview window wants this; the monitor keeps
+/// receiving a bare `Reading`.
+struct PoseSnapshot {
+    let faceBox: CGRect
+    let reading: Reading
+}
+
+/// What one frame contained, with enough detail to draw it.
+enum PoseDetection {
+    case pose(PoseSnapshot)
+    case nobody
+    case failed(String)
+}
+
+/// Turns one camera frame into a `Reading`, using Vision's face detector.
 ///
 /// The only place in the app that knows what a pixel is. Nothing is written to
 /// disk here — the buffer is measured and handed straight back to AVFoundation.
+///
+/// Face detection, not body pose: Vision's body-pose model wants most of a
+/// body in frame and returns nothing at all for the head-and-shoulders crop a
+/// desk webcam actually sees. The face detector is dependable at exactly that
+/// distance, and a face box carries both signals a slouch produces — the head
+/// sinking (box drops) and the body leaning in (box grows).
 struct PoseReader {
     /// Below this, Vision is guessing. Better to report "cannot see you" than
-    /// to nudge someone because a coat rack looked like a shoulder.
-    private let minimumConfidence: VNConfidence = 0.3
+    /// to nudge someone because a poster looked like a face.
+    private let minimumConfidence: VNConfidence = 0.5
 
-    /// A shoulder line narrower than this is a bad detection, not a person
-    /// sitting very far away.
-    private let minimumShoulderWidth = 0.02
+    /// A face narrower than this is a bad detection or someone across the
+    /// room, not the person at the desk.
+    private let minimumFaceWidth = 0.04
 
     func read(_ pixelBuffer: CVPixelBuffer) -> SensorOutcome {
-        let request = VNDetectHumanBodyPoseRequest()
+        switch detect(pixelBuffer) {
+        case .pose(let snapshot):
+            return .measured(snapshot.reading)
+        case .nobody:
+            return .noPersonVisible
+        case .failed(let reason):
+            return .unavailable(reason: reason)
+        }
+    }
+
+    func detect(_ pixelBuffer: CVPixelBuffer) -> PoseDetection {
+        let request = VNDetectFaceRectanglesRequest()
         let handler = VNImageRequestHandler(
             cvPixelBuffer: pixelBuffer,
             orientation: .up,
@@ -27,40 +60,25 @@ struct PoseReader {
         do {
             try handler.perform([request])
         } catch {
-            return .unavailable(reason: "Vision failed: \(error.localizedDescription)")
+            return .failed("Vision failed: \(error.localizedDescription)")
         }
 
-        guard let observation = request.results?.first,
-              let joints = try? observation.recognizedPoints(.all) else {
-            return .noPersonVisible
+        // The largest confident face is the person at the desk; anyone
+        // walking past in the background is smaller.
+        let candidates = (request.results ?? [])
+            .filter { $0.confidence >= minimumConfidence }
+        guard let face = candidates.max(by: { $0.boundingBox.width < $1.boundingBox.width }),
+              face.boundingBox.width >= minimumFaceWidth else {
+            return .nobody
         }
 
-        return measure(joints)
-    }
-
-    private func measure(
-        _ joints: [VNHumanBodyPoseObservation.JointName: VNRecognizedPoint]
-    ) -> SensorOutcome {
-        guard let nose = joints[.nose],
-              let leftShoulder = joints[.leftShoulder],
-              let rightShoulder = joints[.rightShoulder],
-              nose.confidence >= minimumConfidence,
-              leftShoulder.confidence >= minimumConfidence,
-              rightShoulder.confidence >= minimumConfidence else {
-            return .noPersonVisible
-        }
-
-        let dx = Double(leftShoulder.location.x - rightShoulder.location.x)
-        let dy = Double(leftShoulder.location.y - rightShoulder.location.y)
-        let shoulderWidth = (dx * dx + dy * dy).squareRoot()
-        guard shoulderWidth >= minimumShoulderWidth else { return .noPersonVisible }
-
-        // Vision's origin is bottom-left, so a higher head means a larger y.
-        let shoulderMidY = Double(leftShoulder.location.y + rightShoulder.location.y) / 2
-        let headHeight = Double(nose.location.y) - shoulderMidY
-
-        return .measured(
-            Reading(uprightness: headHeight / shoulderWidth, proximity: shoulderWidth)
-        )
+        let box = face.boundingBox
+        return .pose(PoseSnapshot(
+            faceBox: box,
+            reading: Reading(
+                uprightness: Double(box.midY),
+                proximity: Double(box.width)
+            )
+        ))
     }
 }

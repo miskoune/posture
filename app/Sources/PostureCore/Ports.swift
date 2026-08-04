@@ -18,6 +18,14 @@ public enum SensorOutcome: Equatable {
 public protocol PostureSensor: AnyObject {
     /// Takes one measurement. The completion runs on the main queue.
     func sample(completion: @escaping (SensorOutcome) -> Void)
+
+    /// Monitoring has paused; release whatever sampling holds open. A sensor
+    /// with nothing to release can ignore this.
+    func rest()
+}
+
+public extension PostureSensor {
+    func rest() {}
 }
 
 /// Anything that can tell the user to sit back.

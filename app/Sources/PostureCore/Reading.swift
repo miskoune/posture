@@ -6,14 +6,13 @@ import Foundation
 /// identity — two ratios describing a shape, which is why the app can be
 /// honest about never storing a photograph.
 public struct Reading: Equatable {
-    /// Height of the head above the shoulder line, divided by shoulder width.
-    ///
-    /// Scale invariant: rolling your chair back shrinks both terms equally. It
-    /// falls when the head sinks forward and down, which is what a slouch is.
+    /// How high the head sits in the frame, 0 at the bottom edge, 1 at the
+    /// top. It falls when the head sinks forward and down, which is what a
+    /// slouch is. Assumes the camera does not move — a laptop lid.
     public let uprightness: Double
 
-    /// Shoulder width in normalised frame units. Grows as you lean toward the
-    /// screen. Deliberately *not* scale invariant — that is the signal.
+    /// Apparent head width as a fraction of the frame. Grows as you lean
+    /// toward the screen — that is the signal.
     public let proximity: Double
 
     public init(uprightness: Double, proximity: Double) {

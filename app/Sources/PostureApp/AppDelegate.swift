@@ -11,7 +11,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Built in `applicationDidFinishLaunching`, never in `init`: an
     /// NSStatusItem may only be created once NSApplication is up.
     private var menu: StatusMenuController?
+    private var preview: PreviewWindowController?
     private var timer: Timer?
+    private var timerInterval: TimeInterval = 0
+
+    /// Calibration wants five clean readings; at the normal sampling pace
+    /// that is close to half a minute of apparent silence. Sampling fast
+    /// while calibrating turns it into a couple of seconds.
+    private let calibrationSampleInterval: TimeInterval = 0.5
 
     init(
         settings: SettingsStoring,
@@ -33,16 +40,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.handle(command)
         }
         self.menu = menu
+        preview = PreviewWindowController(settings: settings)
 
         monitor.onStateChange = { [weak self] state in
-            self?.renderMenu(state)
+            self?.render(state)
         }
-        renderMenu(monitor.state)
+        render(monitor.state)
 
         nudger.requestAuthorization()
         CameraSensor.requestAccess { [weak self] granted in
             guard granted else {
-                self?.renderMenu(.unavailable(reason: "Camera access denied"))
+                self?.render(.unavailable(reason: "Camera access denied"))
                 return
             }
             self?.startSampling()
@@ -57,10 +65,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - The clock
 
     private func startSampling() {
+        schedule(interval: desiredInterval(for: monitor.state))
+        monitor.sampleNow()
+    }
+
+    private func schedule(interval: TimeInterval) {
         timer?.invalidate()
+        timerInterval = interval
 
         let timer = Timer(
-            timeInterval: settings.sampleInterval,
+            timeInterval: interval,
             target: self,
             selector: #selector(tick),
             userInfo: nil,
@@ -70,7 +84,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // someone is checking whether the thing works.
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
+    }
 
+    private func desiredInterval(for state: PostureState) -> TimeInterval {
+        if case .calibrating = state { return calibrationSampleInterval }
+        return settings.sampleInterval
+    }
+
+    /// Speeds the clock up while calibrating and back down afterwards. Only
+    /// once sampling has started — before camera access there is no timer to
+    /// retune.
+    private func retuneTimer(for state: PostureState) {
+        guard timer != nil else { return }
+        let desired = desiredInterval(for: state)
+        guard desired != timerInterval else { return }
+        schedule(interval: desired)
         monitor.sampleNow()
     }
 
@@ -84,9 +112,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         switch command {
         case .calibrate:
             monitor.beginCalibration()
+        case .showPreview:
+            preview?.show()
         case .togglePause:
             monitor.setPaused(!settings.isPaused)
-            renderMenu(monitor.state)
+            render(monitor.state)
         case .setTolerance(let value):
             settings.tolerance = value
         case .setPatience(let value):
@@ -94,7 +124,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func renderMenu(_ state: PostureState) {
+    private func render(_ state: PostureState) {
         menu?.render(state, isPaused: settings.isPaused)
+        preview?.monitorState = state
+        retuneTimer(for: state)
     }
 }

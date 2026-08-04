@@ -3,12 +3,13 @@ import CoreVideo
 import Foundation
 import PostureCore
 
-/// Wakes the camera, keeps one usable frame, and shuts it off again.
+/// Keeps the camera running and measures one frame whenever asked.
 ///
-/// The session is deliberately not left running. A live stream would keep the
-/// camera powered all day; this takes one frame every few seconds and stops.
-/// The visible consequence is that the camera light blinks rather than staying
-/// lit — which is the honest signal, because it really is off in between.
+/// The session stays on while monitoring is active, so the camera light is
+/// simply lit — a steady, legible signal. A blinking light (duty-cycling the
+/// session per sample) was tried first and reads as the camera sneaking
+/// glances; solid on while monitoring, off while paused is calmer and just as
+/// honest. Pausing stops the session, and the light, entirely.
 ///
 /// The frame never leaves the capture queue. `CMSampleBufferGetImageBuffer`
 /// returns a buffer owned by AVFoundation's pool, so it is measured in place
@@ -66,13 +67,18 @@ final class CameraSensor: NSObject, PostureSensor, AVCaptureVideoDataOutputSampl
 
     private func begin(_ completion: @escaping (SensorOutcome) -> Void) {
         pending = completion
-        remainingWarmup = warmupFrames
 
-        if !session.isRunning {
+        if session.isRunning {
+            // The stream is warm; the next frame is representative.
+            remainingWarmup = 0
+        } else {
+            // Auto-exposure needs a few frames to settle after a cold start.
+            remainingWarmup = warmupFrames
             session.startRunning()
         }
 
-        // Never leave the camera running because a frame failed to arrive.
+        // Answer even if no frame ever arrives, so the monitor is not stuck
+        // waiting on a completion forever.
         queue.asyncAfter(deadline: .now() + frameTimeout) { [weak self] in
             self?.finish(with: .unavailable(reason: "No frame from the camera"))
         }
@@ -129,17 +135,24 @@ final class CameraSensor: NSObject, PostureSensor, AVCaptureVideoDataOutputSampl
         finish(with: reader.read(buffer))
     }
 
-    /// Stops the session and answers exactly once. Only ever called on `queue`,
-    /// which is what keeps `pending` free of races.
+    /// Answers exactly once, leaving the session running for the next sample.
+    /// Only ever called on `queue`, which is what keeps `pending` free of
+    /// races.
     private func finish(with outcome: SensorOutcome) {
         guard let completion = pending else { return }
         pending = nil
-
-        if session.isRunning {
-            session.stopRunning()
-        }
-
         deliver(outcome, to: completion)
+    }
+
+    /// Called when monitoring pauses: the light must go out, or "paused"
+    /// would be a lie the LED contradicts.
+    func rest() {
+        queue.async { [weak self] in
+            guard let self else { return }
+            if self.session.isRunning {
+                self.session.stopRunning()
+            }
+        }
     }
 
     private func deliver(

@@ -62,6 +62,9 @@ public final class PostureMonitor {
         settings.isPaused = paused
         tracker.reset()
         calibration = nil
+        if paused {
+            sensor.rest()
+        }
         state = Self.initialState(for: settings)
     }
 

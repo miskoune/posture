@@ -50,10 +50,11 @@ camera and a fake clock — which is what `Tests/PostureCoreTests` does, includi
 
 ## Two decisions worth knowing
 
-**The camera is duty-cycled, not streamed.** Each sample wakes the session,
-keeps the first frame after a three-frame exposure warmup, and stops it again.
-The visible consequence is that the camera light blinks rather than staying lit.
-That is the honest signal: it really is off in between.
+**The camera light is steady, not blinking.** While monitoring, the session
+stays running and one frame is measured every few seconds; the light is simply
+on. Duty-cycling the session per sample was tried first, but a blinking light
+reads as the camera sneaking glances. Solid green while monitoring, off while
+paused — the light maps one-to-one onto what the app is doing.
 
 **There is no network entitlement.** `Resources/Posture.entitlements` grants the
 sandbox and the camera, nothing else. The app cannot open a socket even if a
