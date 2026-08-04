@@ -66,4 +66,3 @@ than promised in a privacy policy. Do not add one without arguing about it.
 - Pausing during screen sharing and calls
 - Anything for an external webcam beyond what macOS exposes by default
 - A Developer ID signature — the ad-hoc one only works on the machine that built it
-- An app icon

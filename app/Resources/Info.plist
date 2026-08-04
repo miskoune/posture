@@ -19,6 +19,9 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>14.0</string>
 
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+
 	<!-- No Dock icon, no app switcher entry: it lives in the menu bar. -->
 	<key>LSUIElement</key>
 	<true/>

@@ -25,6 +25,7 @@ rm -rf "${BUNDLE}"
 mkdir -p "${BUNDLE}/Contents/MacOS" "${BUNDLE}/Contents/Resources"
 cp "${BINARY}" "${BUNDLE}/Contents/MacOS/Posture"
 cp Resources/Info.plist "${BUNDLE}/Contents/Info.plist"
+cp Resources/AppIcon.icns "${BUNDLE}/Contents/Resources/AppIcon.icns"
 
 # Ad-hoc signature. Enough for the sandbox and the camera prompt on your own
 # machine; a real Developer ID signature is only needed to hand it to somebody
