@@ -67,7 +67,8 @@ final class SlouchTrackerTests: XCTestCase {
         clock.advance(seconds: 200)
         XCTAssertTrue(tracker.evaluate(slouched, against: rule).shouldNudge)
 
-        // Sit back up, then slide again.
+        // Sit back up — held for two readings, so it counts — then slide again.
+        _ = tracker.evaluate(goodPosture, against: rule)
         _ = tracker.evaluate(goodPosture, against: rule)
         _ = tracker.evaluate(slouched, against: rule)
         clock.advance(seconds: 200)
@@ -76,6 +77,26 @@ final class SlouchTrackerTests: XCTestCase {
             tracker.evaluate(slouched, against: rule).shouldNudge,
             "a new slouch deserves a new nudge"
         )
+    }
+
+    func testOneLuckyFrameDoesNotForgetTheSlouch() {
+        let (tracker, clock) = makeTracker()
+        let started = clock.now
+
+        _ = tracker.evaluate(slouched, against: rule)
+        clock.advance(seconds: 60)
+
+        // A single good reading among bad ones is noise, not recovery.
+        _ = tracker.evaluate(goodPosture, against: rule)
+        clock.advance(seconds: 60)
+        let verdict = tracker.evaluate(slouched, against: rule)
+
+        XCTAssertEqual(
+            verdict.state,
+            .slouching(since: started),
+            "one good frame must not restart the slouch clock"
+        )
+        XCTAssertTrue(verdict.shouldNudge, "120s of slouching has passed")
     }
 
     func testARepeatingRuleNudgesAgainAfterTheRepeatInterval() {

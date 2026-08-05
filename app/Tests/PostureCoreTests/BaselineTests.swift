@@ -54,6 +54,48 @@ final class BaselineTests: XCTestCase {
         XCTAssertFalse(drift.exceeds(0.01))
     }
 
+    func testNoddingTheHeadDownReadsAsTilt() {
+        // ~18° of pitch away from calibrated, with the face box unmoved —
+        // the slouch the box alone cannot see.
+        let drift = Baseline.upright.drift(
+            from: Reading(uprightness: 1.0, proximity: 0.3, pitch: -0.32)
+        )
+
+        XCTAssertEqual(drift.tilt, 0.2, accuracy: 0.01)
+        XCTAssertTrue(drift.exceeds(0.15))
+        XCTAssertEqual(drift.slump, 0, accuracy: 0.0001)
+    }
+
+    func testTiltingTowardAShoulderReadsAsTilt() {
+        let drift = Baseline.upright.drift(
+            from: Reading(uprightness: 1.0, proximity: 0.3, roll: 0.32)
+        )
+
+        XCTAssertEqual(drift.tilt, 0.2, accuracy: 0.01)
+        XCTAssertTrue(drift.exceeds(0.15))
+    }
+
+    func testTiltMeasuresDeviationFromTheCalibratedAngleNotFromZero() {
+        // Someone whose natural pose Vision reads as pitched is judged
+        // against their own calibration, not against an ideal zero.
+        let pitched = Baseline(uprightness: 1.0, proximity: 0.3, pitch: -0.2)
+        let drift = pitched.drift(
+            from: Reading(uprightness: 1.0, proximity: 0.3, pitch: -0.2)
+        )
+
+        XCTAssertEqual(drift.tilt, 0, accuracy: 0.0001)
+    }
+
+    func testAveragingIncludesTheHeadAngles() {
+        let baseline = Baseline(averaging: [
+            Reading(uprightness: 1.0, proximity: 0.3, pitch: -0.1, roll: 0.2),
+            Reading(uprightness: 1.0, proximity: 0.3, pitch: -0.3, roll: 0.0)
+        ])
+
+        XCTAssertEqual(baseline?.pitch ?? .nan, -0.2, accuracy: 0.0001)
+        XCTAssertEqual(baseline?.roll ?? .nan, 0.1, accuracy: 0.0001)
+    }
+
     func testNearZeroBaselineCannotExplodeIntoInfiniteDrift() {
         let degenerate = Baseline(uprightness: 0, proximity: 0)
         let drift = degenerate.drift(from: Reading(uprightness: -0.001, proximity: 0.001))

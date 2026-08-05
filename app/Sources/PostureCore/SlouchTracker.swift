@@ -40,9 +40,14 @@ public struct Verdict: Equatable {
 /// the two facts that cannot be recomputed from a single reading — when the
 /// current slouch began, and when it was last mentioned.
 public final class SlouchTracker {
+    /// One good reading among bad ones is as likely to be a lucky frame as a
+    /// real recovery; this many in a row means the user actually sat up.
+    private static let goodReadingsToForgetASlouch = 2
+
     private let clock: Clock
     private var slouchStartedAt: Date?
     private var lastNudgedAt: Date?
+    private var goodStreak = 0
 
     public init(clock: Clock) {
         self.clock = clock
@@ -53,6 +58,7 @@ public final class SlouchTracker {
     public func reset() {
         slouchStartedAt = nil
         lastNudgedAt = nil
+        goodStreak = 0
     }
 
     public func evaluate(_ outcome: SensorOutcome, against rule: PostureRule) -> Verdict {
@@ -73,10 +79,14 @@ public final class SlouchTracker {
 
     private func judge(_ reading: Reading, against rule: PostureRule) -> Verdict {
         guard rule.baseline.drift(from: reading).exceeds(rule.tolerance) else {
-            reset()
+            goodStreak += 1
+            if goodStreak >= Self.goodReadingsToForgetASlouch {
+                reset()
+            }
             return Verdict(state: .upright, nudgeAfterMinutes: nil)
         }
 
+        goodStreak = 0
         let since = slouchStartedAt ?? clock.now
         slouchStartedAt = since
 

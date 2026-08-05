@@ -51,6 +51,9 @@ struct PoseReader {
 
     func detect(_ pixelBuffer: CVPixelBuffer) -> PoseDetection {
         let request = VNDetectFaceRectanglesRequest()
+        // Revision 3 is the one that reports head pitch alongside roll; the
+        // default revision depends on the OS, so pin it.
+        request.revision = VNDetectFaceRectanglesRequestRevision3
         let handler = VNImageRequestHandler(
             cvPixelBuffer: pixelBuffer,
             orientation: .up,
@@ -77,7 +80,9 @@ struct PoseReader {
             faceBox: box,
             reading: Reading(
                 uprightness: Double(box.midY),
-                proximity: Double(box.width)
+                proximity: Double(box.width),
+                pitch: face.pitch?.doubleValue ?? 0,
+                roll: face.roll?.doubleValue ?? 0
             )
         ))
     }

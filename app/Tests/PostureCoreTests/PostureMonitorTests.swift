@@ -43,14 +43,15 @@ final class PostureMonitorTests: XCTestCase {
         sensor.nextOutcome = goodPosture
 
         monitor.beginCalibration()
-        XCTAssertEqual(monitor.state, .calibrating(collected: 0, needed: 5))
+        XCTAssertEqual(monitor.state, .calibrating(collected: 0, needed: 10))
 
-        for _ in 0..<5 {
+        for _ in 0..<10 {
             monitor.sampleNow()
         }
 
         XCTAssertEqual(monitor.state, .upright)
-        XCTAssertEqual(settings.baseline, Baseline(uprightness: 1.0, proximity: 0.3))
+        XCTAssertEqual(settings.baseline?.uprightness ?? .nan, 1.0, accuracy: 0.0001)
+        XCTAssertEqual(settings.baseline?.proximity ?? .nan, 0.3, accuracy: 0.0001)
     }
 
     func testFramesVisionCannotReadDoNotShortenCalibration() {
@@ -59,11 +60,11 @@ final class PostureMonitorTests: XCTestCase {
 
         monitor.beginCalibration()
         sensor.nextOutcome = .noPersonVisible
-        for _ in 0..<5 {
+        for _ in 0..<10 {
             monitor.sampleNow()
         }
 
-        XCTAssertEqual(monitor.state, .calibrating(collected: 0, needed: 5))
+        XCTAssertEqual(monitor.state, .calibrating(collected: 0, needed: 10))
         XCTAssertNil(settings.baseline, "a dark room must not produce a baseline")
     }
 
@@ -189,7 +190,7 @@ final class PostureMonitorTests: XCTestCase {
 
         // Recalibrating to the current pose must not immediately nudge for it.
         monitor.beginCalibration()
-        for _ in 0..<5 {
+        for _ in 0..<10 {
             monitor.sampleNow()
         }
         monitor.sampleNow()

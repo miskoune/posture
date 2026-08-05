@@ -364,15 +364,22 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
 
         let drift = baseline.drift(from: reading)
         let detail = String(
-            format: "slump %+.0f%%   lean %+.0f%%   tolerance %.0f%%",
-            drift.slump * 100, drift.lean * 100, settings.tolerance * 100
+            format: "slump %+.0f%%   lean %+.0f%%   tilt %+.0f%%   tolerance %.0f%%",
+            drift.slump * 100, drift.lean * 100, drift.tilt * 100,
+            settings.tolerance * 100
         )
 
         if drift.exceeds(settings.tolerance) {
-            let axis = drift.slump > drift.lean ? "sit up" : "sit back"
-            return ("Bad posture — \(axis)", detail, warnColor)
+            return ("Bad posture — \(advice(for: drift))", detail, warnColor)
         }
         return ("Good posture", detail, goodColor)
+    }
+
+    /// Names the axis that is furthest gone, so the fix is always actionable.
+    private func advice(for drift: Drift) -> String {
+        if drift.slump >= drift.lean && drift.slump >= drift.tilt { return "sit up" }
+        if drift.lean >= drift.tilt { return "sit back" }
+        return "straighten your head"
     }
 
     private func setStatus(_ title: String, color: NSColor, detail: String) {

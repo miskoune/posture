@@ -10,7 +10,10 @@ public struct Calibration: Equatable {
     public let samplesNeeded: Int
     private var samples: [Reading] = []
 
-    public init(samplesNeeded: Int = 5) {
+    /// Ten readings at the fast calibration pace is about five seconds of
+    /// holding the pose — long enough to average out fidgeting, short enough
+    /// not to feel like a ceremony.
+    public init(samplesNeeded: Int = 10) {
         self.samplesNeeded = max(1, samplesNeeded)
     }
 
