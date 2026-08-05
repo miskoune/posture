@@ -6,7 +6,7 @@ import PostureCore
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let settings: SettingsStoring
     private let monitor: PostureMonitor
-    private let nudger: NotificationNudger
+    private let nudger: NudgePresenter
 
     /// Built in `applicationDidFinishLaunching`, never in `init`: an
     /// NSStatusItem may only be created once NSApplication is up.
@@ -23,7 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     init(
         settings: SettingsStoring,
         monitor: PostureMonitor,
-        nudger: NotificationNudger
+        nudger: NudgePresenter
     ) {
         self.settings = settings
         self.monitor = monitor
@@ -35,7 +35,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let menu = StatusMenuController(
             tolerance: settings.tolerance,
             patience: settings.patience,
-            nudgeRepeat: settings.nudgeRepeat
+            nudgeRepeat: settings.nudgeRepeat,
+            showPreviewOnNudge: settings.showPreviewOnNudge
         )
         menu.onCommand = { [weak self] command in
             self?.handle(command)
@@ -132,6 +133,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case .setNudgeRepeat(let value):
             settings.nudgeRepeat = value
             syncMenuChoices()
+        case .togglePreviewOnNudge:
+            settings.showPreviewOnNudge.toggle()
+            syncMenuChoices()
         }
     }
 
@@ -139,7 +143,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu?.syncChoices(
             tolerance: settings.tolerance,
             patience: settings.patience,
-            nudgeRepeat: settings.nudgeRepeat
+            nudgeRepeat: settings.nudgeRepeat,
+            showPreviewOnNudge: settings.showPreviewOnNudge
         )
     }
 

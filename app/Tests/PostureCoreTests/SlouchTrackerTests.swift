@@ -43,7 +43,7 @@ final class SlouchTrackerTests: XCTestCase {
         let verdict = tracker.evaluate(slouched, against: rule)
 
         XCTAssertTrue(verdict.shouldNudge)
-        XCTAssertEqual(verdict.nudgeAfterMinutes, 2)
+        XCTAssertEqual(verdict.nudgeAfterSeconds, 120)
     }
 
     func testItNudgesOnlyOncePerSlouch() {
@@ -118,7 +118,7 @@ final class SlouchTrackerTests: XCTestCase {
         clock.advance(seconds: 1)
         let reminder = tracker.evaluate(slouched, against: repeating)
         XCTAssertTrue(reminder.shouldNudge)
-        XCTAssertEqual(reminder.nudgeAfterMinutes, 7, "120s + 300s of slouching")
+        XCTAssertEqual(reminder.nudgeAfterSeconds, 420, "120s + 300s of slouching")
     }
 
     func testARepeatingRuleKeepsRemindingForAsLongAsTheSlouchLasts() {

@@ -27,11 +27,11 @@ public struct PostureRule: Equatable {
 /// What the app should do about one reading.
 public struct Verdict: Equatable {
     public let state: PostureState
-    /// Minutes slouched, when this is the moment to say something. `nil` means
+    /// Seconds slouched, when this is the moment to say something. `nil` means
     /// stay quiet — which is the answer almost every time.
-    public let nudgeAfterMinutes: Int?
+    public let nudgeAfterSeconds: Int?
 
-    public var shouldNudge: Bool { nudgeAfterMinutes != nil }
+    public var shouldNudge: Bool { nudgeAfterSeconds != nil }
 }
 
 /// Decides when a slouch has lasted long enough to deserve a banner.
@@ -64,13 +64,13 @@ public final class SlouchTracker {
     public func evaluate(_ outcome: SensorOutcome, against rule: PostureRule) -> Verdict {
         switch outcome {
         case .unavailable(let reason):
-            return Verdict(state: .unavailable(reason: reason), nudgeAfterMinutes: nil)
+            return Verdict(state: .unavailable(reason: reason), nudgeAfterSeconds: nil)
 
         case .noPersonVisible:
             // An empty chair is not good posture, but it is not a slouch
             // either. Hold the clock rather than reset it, so stepping out for
             // a moment neither nudges you nor wipes the slouch you left in.
-            return Verdict(state: .cannotSee, nudgeAfterMinutes: nil)
+            return Verdict(state: .cannotSee, nudgeAfterSeconds: nil)
 
         case .measured(let reading):
             return judge(reading, against: rule)
@@ -83,7 +83,7 @@ public final class SlouchTracker {
             if goodStreak >= Self.goodReadingsToForgetASlouch {
                 reset()
             }
-            return Verdict(state: .upright, nudgeAfterMinutes: nil)
+            return Verdict(state: .upright, nudgeAfterSeconds: nil)
         }
 
         goodStreak = 0
@@ -92,19 +92,19 @@ public final class SlouchTracker {
 
         return Verdict(
             state: .slouching(since: since),
-            nudgeAfterMinutes: overdueMinutes(since: since, rule: rule)
+            nudgeAfterSeconds: overdueSeconds(since: since, rule: rule)
         )
     }
 
     /// The first nudge fires once patience runs out. After that, the rule's
     /// `repeatEvery` decides whether staying folded over earns reminders or
     /// silence; sitting up always re-arms the first nudge.
-    private func overdueMinutes(since: Date, rule: PostureRule) -> Int? {
+    private func overdueSeconds(since: Date, rule: PostureRule) -> Int? {
         guard clock.now.timeIntervalSince(since) >= rule.patience else { return nil }
         guard isDueForAnotherNudge(rule: rule) else { return nil }
 
         lastNudgedAt = clock.now
-        return max(1, Int(clock.now.timeIntervalSince(since) / 60))
+        return max(1, Int(clock.now.timeIntervalSince(since)))
     }
 
     private func isDueForAnotherNudge(rule: PostureRule) -> Bool {

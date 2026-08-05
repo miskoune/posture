@@ -77,7 +77,7 @@ final class PostureMonitorTests: XCTestCase {
         clock.advance(seconds: 130)
         monitor.sampleNow()
 
-        XCTAssertEqual(nudger.nudges, [2])
+        XCTAssertEqual(nudger.nudges, [130])
     }
 
     func testPausingStopsLookingEntirely() {
@@ -139,7 +139,7 @@ final class PostureMonitorTests: XCTestCase {
         monitor.sampleNow()
         clock.advance(seconds: 130)
         monitor.sampleNow()
-        XCTAssertEqual(nudger.nudges, [2])
+        XCTAssertEqual(nudger.nudges, [130])
         XCTAssertEqual(nudger.clearCount, 0)
 
         sensor.nextOutcome = goodPosture

@@ -11,7 +11,11 @@ let app = NSApplication.shared
 
 let settings = UserDefaultsSettings()
 let sensor = CameraSensor()
-let nudger = NotificationNudger()
+let nudger = NudgePresenter(
+    notifications: NotificationNudger(),
+    preview: NudgePreviewPanelController(settings: settings),
+    settings: settings
+)
 
 let monitor = PostureMonitor(
     sensor: sensor,

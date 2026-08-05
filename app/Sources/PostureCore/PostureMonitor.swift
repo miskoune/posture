@@ -115,8 +115,8 @@ public final class PostureMonitor {
         let verdict = tracker.evaluate(outcome, against: rule)
         state = verdict.state
 
-        if let minutes = verdict.nudgeAfterMinutes {
-            nudger.deliverNudge(minutesSlouching: minutes)
+        if let seconds = verdict.nudgeAfterSeconds {
+            nudger.deliverNudge(secondsSlouching: seconds)
         }
     }
 

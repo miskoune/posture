@@ -27,10 +27,10 @@ final class NotificationNudger: NudgeDelivering {
         }
     }
 
-    func deliverNudge(minutesSlouching: Int) {
+    func deliverNudge(secondsSlouching: Int) {
         let content = UNMutableNotificationContent()
         content.title = "Posture"
-        content.body = body(forMinutes: minutesSlouching)
+        content.body = body(forSeconds: secondsSlouching)
         content.sound = .default
 
         center.add(
@@ -51,10 +51,19 @@ final class NotificationNudger: NudgeDelivering {
     /// The tone escalates with the duration — a nudge at first, a firmer push
     /// once the slouch has clearly settled in — and each tier rotates a few
     /// phrasings so repeat reminders don't read as a stuck record.
-    private func body(forMinutes minutes: Int) -> String {
-        let duration = minutes <= 1 ? "a minute" : "\(minutes) minutes"
-        return lines(forMinutes: minutes, duration: duration).randomElement()
-            ?? "Bad posture. Sit back."
+    private func body(forSeconds seconds: Int) -> String {
+        return lines(forMinutes: seconds / 60, duration: duration(forSeconds: seconds))
+            .randomElement() ?? "Bad posture. Sit back."
+    }
+
+    /// Honest to the second below a minute, rounded to minutes above — nobody
+    /// wants to read "for 754 seconds".
+    private func duration(forSeconds seconds: Int) -> String {
+        switch seconds {
+        case ..<60: return "\(seconds) seconds"
+        case ..<120: return "a minute"
+        default: return "\(seconds / 60) minutes"
+        }
     }
 
     private func lines(forMinutes minutes: Int, duration: String) -> [String] {

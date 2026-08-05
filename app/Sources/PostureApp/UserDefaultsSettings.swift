@@ -11,6 +11,7 @@ final class UserDefaultsSettings: SettingsStoring {
         static let tolerance = "tolerance"
         static let patience = "patience"
         static let nudgeRepeat = "nudgeRepeat"
+        static let showPreviewOnNudge = "showPreviewOnNudge"
         static let sampleInterval = "sampleInterval"
         static let paused = "paused"
     }
@@ -30,6 +31,7 @@ final class UserDefaultsSettings: SettingsStoring {
             Key.tolerance: Self.defaultTolerance,
             Key.patience: Self.defaultPatience,
             Key.nudgeRepeat: Self.defaultNudgeRepeat,
+            Key.showPreviewOnNudge: true,
             Key.sampleInterval: Self.defaultSampleInterval,
             Key.paused: false
         ])
@@ -66,6 +68,12 @@ final class UserDefaultsSettings: SettingsStoring {
     var nudgeRepeat: TimeInterval {
         get { defaults.double(forKey: Key.nudgeRepeat) }
         set { defaults.set(newValue, forKey: Key.nudgeRepeat) }
+    }
+
+    /// Whether a nudge also brings up the corner camera preview.
+    var showPreviewOnNudge: Bool {
+        get { defaults.bool(forKey: Key.showPreviewOnNudge) }
+        set { defaults.set(newValue, forKey: Key.showPreviewOnNudge) }
     }
 
     /// Seconds between camera samples.

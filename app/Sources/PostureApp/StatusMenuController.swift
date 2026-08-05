@@ -15,6 +15,7 @@ final class StatusMenuController {
         case setTolerance(Double)
         case setPatience(Double)
         case setNudgeRepeat(Double)
+        case togglePreviewOnNudge
     }
 
     private let statusItem = NSStatusBar.system.statusItem(
@@ -25,6 +26,11 @@ final class StatusMenuController {
     private var toleranceMenu: NSMenu?
     private var patienceMenu: NSMenu?
     private var nudgeRepeatMenu: NSMenu?
+    private let previewToggleItem = NSMenuItem(
+        title: "Show preview when notified",
+        action: nil,
+        keyEquivalent: ""
+    )
 
     private let tolerances: [(label: String, value: Double)] = [
         ("Relaxed", 0.25),
@@ -52,8 +58,14 @@ final class StatusMenuController {
 
     var onCommand: ((Command) -> Void)?
 
-    init(tolerance: Double, patience: TimeInterval, nudgeRepeat: TimeInterval) {
+    init(
+        tolerance: Double,
+        patience: TimeInterval,
+        nudgeRepeat: TimeInterval,
+        showPreviewOnNudge: Bool
+    ) {
         buildMenu(tolerance: tolerance, patience: patience, nudgeRepeat: nudgeRepeat)
+        previewToggleItem.state = showPreviewOnNudge ? .on : .off
     }
 
     // MARK: - Rendering
@@ -195,6 +207,10 @@ final class StatusMenuController {
         nudgeRepeatMenu = nudgeRepeatItem.submenu
         menu.addItem(nudgeRepeatItem)
 
+        previewToggleItem.action = #selector(previewToggleClicked)
+        previewToggleItem.target = self
+        menu.addItem(previewToggleItem)
+
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(
             title: "Quit Posture",
@@ -238,10 +254,16 @@ final class StatusMenuController {
     }
 
     /// Reflects values changed elsewhere (the dashboard) in the checkmarks.
-    func syncChoices(tolerance: Double, patience: TimeInterval, nudgeRepeat: TimeInterval) {
+    func syncChoices(
+        tolerance: Double,
+        patience: TimeInterval,
+        nudgeRepeat: TimeInterval,
+        showPreviewOnNudge: Bool
+    ) {
         tick(value: tolerance, in: toleranceMenu)
         tick(value: patience, in: patienceMenu)
         tick(value: nudgeRepeat, in: nudgeRepeatMenu)
+        previewToggleItem.state = showPreviewOnNudge ? .on : .off
     }
 
     private func tick(value: Double, in menu: NSMenu?) {
@@ -270,6 +292,10 @@ final class StatusMenuController {
         guard let value = sender.representedObject as? Double else { return }
         tick(sender)
         onCommand?(.setNudgeRepeat(value))
+    }
+
+    @objc private func previewToggleClicked() {
+        onCommand?(.togglePreviewOnNudge)
     }
 
     private func tick(_ sender: NSMenuItem) {
