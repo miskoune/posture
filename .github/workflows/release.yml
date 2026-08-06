@@ -19,7 +19,11 @@ name: Release macOS app
 on:
   push:
     branches: [main]
-    paths: ['app/**']
+    # The release machinery itself counts as app changes.
+    paths:
+      - 'app/**'
+      - 'release.config.js'
+      - '.github/workflows/release.yml'
 
 concurrency:
   group: release-app

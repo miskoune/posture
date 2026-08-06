@@ -5,9 +5,10 @@
  * below — without those catch-alls, commit-analyzer's default rules would let a
  * website `feat:` bump the app.
  *
- * commit-analyzer picks the HIGHEST release among all matching rules, so an
- * app-scoped fix matching both `{scope:'app', type:'fix' → patch}` and
- * `{type:'fix' → false}` still releases a patch.
+ * Rule order matters: when several rules match a commit, commit-analyzer keeps
+ * the LAST match. The broad "never release" rules therefore come first and the
+ * app-scoped rules last, so `fix(app)` hits `{type:'fix' → false}` and then
+ * `{scope:'app', type:'fix' → patch}` — and patch wins.
  */
 export default {
   branches: ['main'],
@@ -18,6 +19,13 @@ export default {
       {
         preset: 'conventionalcommits',
         releaseRules: [
+          // Default: nothing releases the app (website commits land here).
+          { breaking: true, release: false },
+          { type: 'feat', release: false },
+          { type: 'fix', release: false },
+          { type: 'perf', release: false },
+          { type: 'revert', release: false },
+          // (app)-scoped commits override, last match wins.
           // Breaking stays minor to remain in 0.x.x
           { scope: 'app', breaking: true, release: 'minor' },
           { scope: 'app', type: 'feat', release: 'minor' },
@@ -26,12 +34,6 @@ export default {
           { scope: 'app', type: 'refactor', release: 'patch' },
           { scope: 'app', type: 'style', release: 'patch' },
           { scope: 'app', type: 'chore', release: 'patch' },
-          // Everything below: the website. Never bumps the app.
-          { breaking: true, release: false },
-          { type: 'feat', release: false },
-          { type: 'fix', release: false },
-          { type: 'perf', release: false },
-          { type: 'revert', release: false },
         ],
       },
     ],
