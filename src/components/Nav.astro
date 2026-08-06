@@ -16,13 +16,12 @@ const links = [
 ] as const;
 ---
 
-<header
-  class="ps-bar sticky top-0 z-50 border-b border-transparent bg-paper/80 backdrop-blur-xl"
->
-  <nav
-    class="ps-shell flex h-16 items-center justify-between gap-4"
-    aria-label="Main"
-  >
+<header class="ps-bar sticky top-0 z-50">
+  <div class="ps-shell">
+    <nav
+      class="ps-float flex h-16 items-center justify-between gap-4"
+      aria-label="Main"
+    >
     <a
       class="flex items-center gap-2 text-[1.02rem] font-semibold tracking-tight no-underline"
       href="/"
@@ -86,21 +85,46 @@ const links = [
         Download
       </a>
     </div>
-  </nav>
+    </nav>
+  </div>
 </header>
 
 <style>
-  /* the hairline appears only once the page has scrolled under the bar */
-  @supports (animation-timeline: scroll()) {
-    .ps-bar {
-      animation: ps-reveal-rule linear both;
-      animation-timeline: scroll();
-      animation-range: 0 80px;
-    }
-    @keyframes ps-reveal-rule {
-      to {
-        border-bottom-color: var(--line);
-      }
-    }
+  /* At rest the bar sits flush with the page. Once the page scrolls under it,
+   * the nav detaches into a floating blurred pill. */
+  .ps-bar {
+    transition: padding-block 0.35s ease;
+  }
+
+  .ps-float {
+    border: 1px solid transparent;
+    border-radius: 16px;
+    transition:
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      box-shadow 0.35s ease,
+      padding 0.35s ease,
+      height 0.35s ease;
+  }
+
+  .ps-bar.is-scrolled {
+    padding-block: 0.5rem;
+  }
+
+  .ps-bar.is-scrolled .ps-float {
+    height: 3.25rem;
+    padding-inline: 1rem;
+    background: color-mix(in srgb, var(--raised) 82%, transparent);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border-color: var(--line);
+    box-shadow: var(--shadow-card);
   }
 </style>
+
+<script>
+  const bar = document.querySelector('.ps-bar');
+  const onScroll = () => bar?.classList.toggle('is-scrolled', scrollY > 24);
+  onScroll();
+  addEventListener('scroll', onScroll, { passive: true });
+</script>
