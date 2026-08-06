@@ -78,16 +78,15 @@ codesign --force --deep --options runtime \
 codesign --verify --strict --verbose "${BUNDLE}"
 
 # ---------------------------------------------------------------------------
-# Package as a drag-to-Applications DMG.
+# Package as a drag-to-Applications DMG with the styled window: background,
+# fixed icon positions, no toolbar. Layout lives in dmg.json; the background
+# is rendered fresh so it never drifts from the site's palette.
 # ---------------------------------------------------------------------------
 
 echo "==> Creating ${DMG}"
-STAGING="$(mktemp -d)"
-trap 'rm -rf "${STAGING}"' EXIT
-cp -R "${BUNDLE}" "${STAGING}/"
-ln -s /Applications "${STAGING}/Applications"
+node scripts/make-dmg-background.mjs
 rm -f "${DMG}"
-hdiutil create -volname "Posture" -srcfolder "${STAGING}" -ov -format UDZO "${DMG}"
+npx appdmg dmg.json "${DMG}"
 
 codesign --force --sign "${SIGN_IDENTITY}" "${DMG}"
 

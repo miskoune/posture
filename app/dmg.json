@@ -1,0 +1,12 @@
+{
+  "title": "Posture",
+  "background": "build/dmg-background.png",
+  "icon-size": 128,
+  "window": {
+    "size": { "width": 660, "height": 420 }
+  },
+  "contents": [
+    { "x": 170, "y": 210, "type": "file", "path": "build/Posture.app" },
+    { "x": 490, "y": 210, "type": "link", "path": "/Applications" }
+  ]
+}
