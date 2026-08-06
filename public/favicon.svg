@@ -1,13 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="stone" x1="0.24" y1="0" x2="0.76" y2="1">
-      <stop offset="0" stop-color="#fdfbf4"/>
-      <stop offset="0.45" stop-color="#d9d6c6"/>
-      <stop offset="1" stop-color="#7a836a"/>
+    <linearGradient id="ink" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#25282d"/>
+      <stop offset="1" stop-color="#0c0d10"/>
+    </linearGradient>
+    <linearGradient id="mint" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#a9f0c4"/>
+      <stop offset="0.5" stop-color="#7bd8a5"/>
+      <stop offset="1" stop-color="#49a375"/>
     </linearGradient>
   </defs>
-  <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#stone)"/>
-  <circle cx="50" cy="27" r="10" fill="#17191c"/>
-  <path d="M50 41 V64 M50 47.5 L36 57 M50 47.5 L64 57 M50 64 L39 83 M50 64 L61 83"
-        stroke="#17191c" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#ink)"/>
+  <g stroke="#8ca8c2" stroke-opacity="0.11" stroke-width="0.5">
+    <path d="M14 2 V98 M26 2 V98 M38 2 V98 M50 2 V98 M62 2 V98 M74 2 V98 M86 2 V98"/>
+    <path d="M2 14 H98 M2 26 H98 M2 38 H98 M2 50 H98 M2 62 H98 M2 74 H98 M2 86 H98"/>
+  </g>
+  <rect x="24" y="24" width="52" height="52" rx="10.4" fill="none"
+        stroke="url(#mint)" stroke-width="6.3"/>
 </svg>

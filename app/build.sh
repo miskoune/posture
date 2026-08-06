@@ -39,7 +39,7 @@ codesign --verify --verbose "${BUNDLE}"
 
 echo
 echo "Built ${BUNDLE}"
-echo "Launch it, then look for the figure icon in the menu bar."
+echo "Launch it, then look for the square icon in the menu bar."
 echo "First run asks for camera and notification permission."
 
 if [[ "${1:-}" == "--run" ]]; then

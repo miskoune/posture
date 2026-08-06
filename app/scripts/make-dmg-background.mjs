@@ -32,7 +32,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" 
     <text x="${W / 2}" y="86" font-size="24" font-weight="700"
           letter-spacing="-0.5" fill="${INK}">Drag Posture into Applications</text>
     <text x="${W / 2}" y="116" font-size="14" font-weight="450"
-          fill="${MUTED}">Then launch it and look for the figure in the menu bar.</text>
+          fill="${MUTED}">Then launch it and look for the square in the menu bar.</text>
   </g>
 
   <!-- arrow between the two icon positions (centres at x=170 and x=490) -->

@@ -13,7 +13,7 @@ cd app
 ```
 
 That runs the tests, builds release, assembles `build/Posture.app`, ad-hoc signs
-it with the sandbox entitlements, and launches it. Look for the figure icon in
+it with the sandbox entitlements, and launches it. Look for the square icon in
 the menu bar — there is no Dock icon and no window.
 
 First launch asks for camera and notification permission. Then open the menu and

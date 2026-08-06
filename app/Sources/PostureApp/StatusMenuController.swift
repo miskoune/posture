@@ -83,9 +83,9 @@ final class StatusMenuController {
     ) -> (title: String, symbol: String, badge: String?) {
         switch state {
         case .needsCalibration:
-            return ("Not calibrated yet", "figure.stand", nil)
+            return ("Not calibrated yet", "app", nil)
         case .calibrating(let collected, let needed):
-            return ("Calibrating \(collected)/\(needed) — hold still", "figure.stand", nil)
+            return ("Calibrating \(collected)/\(needed) — hold still", "app", nil)
         case .paused:
             return ("Paused", "pause.circle", nil)
         case .cannotSee:
@@ -93,9 +93,9 @@ final class StatusMenuController {
         case .unavailable(let reason):
             return (reason, "exclamationmark.circle", nil)
         case .upright:
-            return ("Good posture", "figure.stand", "checkmark")
+            return ("Good posture", "app", "checkmark")
         case .slouching:
-            return ("Bad posture", "figure.stand", "xmark")
+            return ("Bad posture", "app", "xmark")
         }
     }
 
@@ -103,7 +103,7 @@ final class StatusMenuController {
         statusItem.button?.image = composedIcon(symbol: name, badge: badge)
     }
 
-    /// The figure with a small verdict badge tucked into its bottom-right
+    /// The square with a small verdict badge tucked into its bottom-right
     /// corner — a check when sitting well, a cross when slouching. Drawn as
     /// one template image so the menu bar tints it like any other icon.
     private func composedIcon(symbol: String, badge: String?) -> NSImage? {
@@ -134,7 +134,7 @@ final class StatusMenuController {
                 width: badgeImage.size.width,
                 height: badgeImage.size.height
             )
-            // Punch a gap around the badge so it reads against the figure
+            // Punch a gap around the badge so it reads against the square
             // rather than merging with it.
             NSColor.black.set()
             NSGraphicsContext.current?.compositingOperation = .destinationOut
@@ -219,7 +219,7 @@ final class StatusMenuController {
         ))
 
         statusItem.menu = menu
-        apply(symbolNamed: "figure.stand")
+        apply(symbolNamed: "app")
     }
 
     private func choiceMenu(
