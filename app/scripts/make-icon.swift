@@ -55,15 +55,7 @@ func drawMaster(into ctx: CGContext) {
     )!
     ctx.drawLinearGradient(gradient, start: P(50, 0), end: P(50, 100), options: [])
 
-    // The blueprint grid the Apple developer icons carry — faint, cool,
-    // and quieter towards the edges so the centre stays the stage.
-    ctx.setStrokeColor(CGColor(red: 0.55, green: 0.66, blue: 0.76, alpha: 0.11))
-    ctx.setLineWidth(L(0.35))
-    for i in stride(from: 12.5, through: 87.5, by: 12.5) {
-        ctx.move(to: P(i, 0)); ctx.addLine(to: P(i, 100))
-        ctx.move(to: P(0, i)); ctx.addLine(to: P(100, i))
-    }
-    ctx.strokePath()
+    // A quiet vignette so the plate reads as a lit surface, not a void.
     let vignette = CGGradient(
         colorsSpace: space,
         colors: [
@@ -83,14 +75,28 @@ func drawMaster(into ctx: CGContext) {
     // into a shape so it can hold a gradient — lit mint at the top falling
     // to a deeper green, which is what makes it read as an object instead
     // of a line.
-    // Sized against the squircle the way draft 101 was against its tile:
-    // the frame takes ~54% of the plate, leaving the grid real margin.
+    // Draft 98, "righting-chunky": a faint tilted ghost of the frame first —
+    // the slouch — with the settled frame over it.
+    ctx.saveGState()
+    let centre = P(50, 50)
+    ctx.translateBy(x: centre.x, y: centre.y)
+    ctx.rotate(by: .pi / 18)
+    ctx.setStrokeColor(CGColor(red: 0.283, green: 0.308, blue: 0.333, alpha: 1))
+    ctx.setLineWidth(L(7))
+    ctx.addPath(CGPath(
+        roundedRect: CGRect(x: -L(22.75), y: -L(22.75), width: L(45.5), height: L(45.5)),
+        cornerWidth: L(14), cornerHeight: L(14), transform: nil
+    ))
+    ctx.strokePath()
+    ctx.restoreGState()
+
+    // The settled frame: thick stroke, soft corners, sized like the draft.
     let frame = CGPath(
-        roundedRect: CGRect(x: L(28), y: L(28), width: L(44), height: L(44)),
-        cornerWidth: L(8.8), cornerHeight: L(8.8), transform: nil
+        roundedRect: CGRect(x: L(29.9), y: L(29.9), width: L(40.2), height: L(40.2)),
+        cornerWidth: L(12.25), cornerHeight: L(12.25), transform: nil
     )
     let frameShape = frame.copy(
-        strokingWithWidth: L(5.3), lineCap: .round, lineJoin: .round, miterLimit: 10
+        strokingWithWidth: L(7.9), lineCap: .round, lineJoin: .round, miterLimit: 10
     )
 
     // The bloom stays tight (the artifact's feGaussianBlur was 2.6/100) —
@@ -114,7 +120,7 @@ func drawMaster(into ctx: CGContext) {
         ] as CFArray,
         locations: [0, 0.5, 1]
     )!
-    ctx.drawLinearGradient(mintDepth, start: P(50, 25), end: P(50, 75), options: [])
+    ctx.drawLinearGradient(mintDepth, start: P(50, 27), end: P(50, 73), options: [])
     ctx.restoreGState()
 
     // A hairline of light along the frame's upper edge, the way the Dock's
@@ -122,13 +128,13 @@ func drawMaster(into ctx: CGContext) {
     ctx.saveGState()
     ctx.addPath(frameShape)
     ctx.clip()
-    ctx.clip(to: CGRect(x: 0, y: master * 0.72, width: master, height: master * 0.28))
+    ctx.clip(to: CGRect(x: 0, y: master * 0.67, width: master, height: master * 0.33))
     ctx.setLineWidth(L(1.2))
     ctx.setStrokeColor(CGColor(gray: 1, alpha: 0.35))
     ctx.addPath(
         CGPath(
-            roundedRect: CGRect(x: L(28), y: L(28 + 2), width: L(44), height: L(44)),
-            cornerWidth: L(8.8), cornerHeight: L(8.8), transform: nil
+            roundedRect: CGRect(x: L(29.9), y: L(29.9 + 2.6), width: L(40.2), height: L(40.2)),
+            cornerWidth: L(12.25), cornerHeight: L(12.25), transform: nil
         )
     )
     ctx.strokePath()

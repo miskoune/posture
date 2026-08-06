@@ -11,10 +11,9 @@
     </linearGradient>
   </defs>
   <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#ink)"/>
-  <g stroke="#8ca8c2" stroke-opacity="0.11" stroke-width="0.5">
-    <path d="M14 2 V98 M26 2 V98 M38 2 V98 M50 2 V98 M62 2 V98 M74 2 V98 M86 2 V98"/>
-    <path d="M2 14 H98 M2 26 H98 M2 38 H98 M2 50 H98 M2 62 H98 M2 74 H98 M2 86 H98"/>
-  </g>
-  <rect x="24" y="24" width="52" height="52" rx="10.4" fill="none"
-        stroke="url(#mint)" stroke-width="6.3"/>
+  <rect x="27.4" y="27.4" width="45.2" height="45.2" rx="14"
+        transform="rotate(10 50 50)" fill="none"
+        stroke="#484f55" stroke-width="7"/>
+  <rect x="29.9" y="29.9" width="40.2" height="40.2" rx="12.25" fill="none"
+        stroke="url(#mint)" stroke-width="7.9"/>
 </svg>

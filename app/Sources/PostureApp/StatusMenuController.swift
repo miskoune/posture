@@ -107,8 +107,9 @@ final class StatusMenuController {
     /// corner — a check when sitting well, a cross when slouching. Drawn as
     /// one template image so the menu bar tints it like any other icon.
     private func composedIcon(symbol: String, badge: String?) -> NSImage? {
+        // Medium weight so the square carries the same mass as the app icon.
         let base = NSImage(systemSymbolName: symbol, accessibilityDescription: "Posture")?
-            .withSymbolConfiguration(.init(pointSize: 15, weight: .regular))
+            .withSymbolConfiguration(.init(pointSize: 15, weight: .medium))
         guard let base else { return nil }
 
         guard let badge,
@@ -118,10 +119,13 @@ final class StatusMenuController {
             return base
         }
 
-        let canvas = NSSize(width: 20, height: 17)
+        let canvas = NSSize(width: 22, height: 17)
         let composed = NSImage(size: canvas, flipped: false) { _ in
+            // The square sits left, the badge fully clear of it on the right —
+            // side by side rather than punched into the corner, so neither
+            // crowds the other.
             let baseRect = NSRect(
-                x: (canvas.width - base.size.width) / 2 - 2,
+                x: 0,
                 y: (canvas.height - base.size.height) / 2,
                 width: base.size.width,
                 height: base.size.height
@@ -129,7 +133,7 @@ final class StatusMenuController {
             base.draw(in: baseRect)
 
             let badgeRect = NSRect(
-                x: canvas.width - badgeImage.size.width - 1,
+                x: canvas.width - badgeImage.size.width,
                 y: 0,
                 width: badgeImage.size.width,
                 height: badgeImage.size.height
@@ -138,7 +142,7 @@ final class StatusMenuController {
             // rather than merging with it.
             NSColor.black.set()
             NSGraphicsContext.current?.compositingOperation = .destinationOut
-            NSBezierPath(ovalIn: badgeRect.insetBy(dx: -1.5, dy: -1.5)).fill()
+            NSBezierPath(ovalIn: badgeRect.insetBy(dx: -2, dy: -2)).fill()
             NSGraphicsContext.current?.compositingOperation = .sourceOver
             badgeImage.draw(in: badgeRect)
             return true
