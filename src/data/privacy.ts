@@ -3,7 +3,7 @@ import type { PrivacyPoint } from '../types';
 export const privacyPoints: readonly PrivacyPoint[] = [
   {
     title: 'Nothing is uploaded',
-    body: 'The app ships without the network entitlement. It is not that Posture chooses not to phone home — it cannot. macOS will not let it open a socket.',
+    body: 'The app ships without the network entitlement. It is not that Posture chooses not to phone home: it cannot. macOS will not let it open a socket.',
   },
   {
     title: 'Nothing is recorded',

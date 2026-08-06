@@ -7,11 +7,11 @@ export const faqs: readonly FaqItem[] = [
   },
   {
     q: 'Why is it free?',
-    a: 'It is a menu bar app that compares two angles. Charging for it would mean building a licence server, a payment flow and an account system — three things that would each need the network access this app deliberately does not have. Free and MIT is the honest shape for it.',
+    a: 'It is a menu bar app that compares two angles. Charging for it would mean building a licence server, a payment flow and an account system, three things that would each need the network access this app deliberately does not have. Free and MIT is the honest shape for it.',
   },
   {
     q: 'Does it work in bad lighting?',
-    a: 'It needs enough light for macOS to find a face — roughly what you would need for a video call. In a dim room it reports that it cannot see you rather than guess.',
+    a: 'It needs enough light for macOS to find a face, roughly what you would need for a video call. In a dim room it reports that it cannot see you rather than guess.',
   },
   {
     q: 'Will it eat my battery?',
@@ -27,6 +27,6 @@ export const faqs: readonly FaqItem[] = [
   },
   {
     q: 'When can I download it?',
-    a: 'Now. The download button on this page always serves the newest release — a signed and notarized DMG. Open it, drag Posture to Applications, and grant camera access when macOS asks. Every release also lives on the GitHub releases page with its changelog.',
+    a: 'Now. The download button on this page always serves the newest release: a signed and notarized DMG. Open it, drag Posture to Applications, and grant camera access when macOS asks. Every release also lives on the GitHub releases page with its changelog.',
   },
 ] as const;

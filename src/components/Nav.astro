@@ -1,6 +1,6 @@
 ---
 import { site } from '../config/site';
-import GithubIcon from './GithubIcon.astro';
+import DownloadIcon from './DownloadIcon.astro';
 
 /**
  * Rule 16 — visitors look for the price early and use it to understand the
@@ -12,6 +12,7 @@ const links = [
   { href: '#ps-how', label: 'How it works' },
   { href: '#ps-price', label: 'Price' },
   { href: '#ps-faq', label: 'FAQ' },
+  { href: site.repo, label: 'GitHub' },
 ] as const;
 ---
 
@@ -78,11 +79,11 @@ const links = [
 
       <a
         class="inline-flex items-center gap-2 rounded-[10px] bg-ink px-4 py-2 text-[0.88rem] font-medium text-paper no-underline transition-transform hover:-translate-y-px"
-        href={site.repo}
+        href={site.downloadUrl}
         rel="noopener"
       >
-        <GithubIcon class="h-4 w-4" />
-        Star
+        <DownloadIcon class="h-4 w-4" />
+        Download
       </a>
     </div>
   </nav>

@@ -29,5 +29,5 @@ export const site: SiteConfig = {
    *  what pressing it does. */
   ctaLabel: 'Download for Mac',
   ctaNote:
-    'Free, signed and notarized. Drag it to Applications — that is the whole install.',
+    'Free, signed and notarized. Drag it to Applications and you are done.',
 } as const;

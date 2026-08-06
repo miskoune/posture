@@ -5,7 +5,7 @@ export const steps: readonly Step[] = [
   {
     n: '01',
     title: 'Sit how you want to sit. Press Calibrate.',
-    body: 'Posture stores a handful of numbers describing that pose — the angle of your neck, the height of your shoulders in frame. Not a photo. Numbers.',
+    body: 'Posture stores a handful of numbers describing that pose: the angle of your neck, the height of your shoulders in frame. Not a photo. Numbers.',
   },
   {
     n: '02',

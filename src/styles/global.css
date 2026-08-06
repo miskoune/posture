@@ -15,11 +15,15 @@
  * palette is a tint of ink (muted text, hairlines, sunk panels), never a
  * fourth hue. The old amber "slouching" colour is gone on purpose: grey now
  * carries the wrong state, so green is the only thing on the page that can
- * pull the eye, and it is spent on the single call to action.
+ * pull the eye. Buttons stay ink on purpose; green is spent on small
+ * highlights (stats, checkmarks, the figure) so it never competes with the
+ * black call to action.
  */
 
-/* The palette is the app icon's: warm ivory stone, near-black ink, and the
- * sage-to-moss green the squircle fades into. */
+/* The palette is the logo's two colours: the charcoal ink of the squircle
+ * (#25282d -> #0c0d10) and the mint-to-moss gradient of the ring
+ * (#a9f0c4 -> #7bd8a5 -> #49a375). Ivory paper stays as the neutral ground;
+ * the green is spent on the accent. */
 :root {
   color-scheme: light dark;
 
@@ -30,11 +34,11 @@
   --muted: #676e60;
   --line: #e6e2d3;
   --line-strong: #cfc9b6;
-  /* Monochrome on purpose: the accent is ink itself, so the only colour on
-   * the page is the stone gradient inside the logo. */
-  --accent: #17191c;
-  --accent-soft: #eae7da;
-  --accent-ink: #faf8f1;
+  /* The logo ring's moss stop (#49a375), deepened so light text on a filled
+   * accent passes contrast on ivory. */
+  --accent: #35875f;
+  --accent-soft: #e0f0e3;
+  --accent-ink: #f5fbf6;
 
   --shadow-sm: 0 1px 2px rgb(23 25 20 / 0.06), 0 1px 8px rgb(23 25 20 / 0.04);
   --shadow-lg: 0 12px 40px rgb(23 25 20 / 0.12), 0 2px 8px rgb(23 25 20 / 0.05);
@@ -42,16 +46,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #121410;
-    --raised: #1a1d16;
-    --sunk: #161913;
-    --ink: #edeadf;
-    --muted: #99a08b;
-    --line: #262a1f;
-    --line-strong: #3a4030;
-    --accent: #edeadf;
-    --accent-soft: #22261c;
-    --accent-ink: #121410;
+    /* Dark mode lives inside the squircle: the logo's cool charcoal, with the
+     * ring's mid mint stop as the accent. */
+    --paper: #0f1113;
+    --raised: #17191d;
+    --sunk: #131518;
+    --ink: #e9ece9;
+    --muted: #93a099;
+    --line: #24272c;
+    --line-strong: #383d44;
+    --accent: #7bd8a5;
+    --accent-soft: #182a20;
+    --accent-ink: #0c0d10;
 
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 16px 50px rgb(0 0 0 / 0.55);

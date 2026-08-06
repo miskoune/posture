@@ -3,13 +3,13 @@ import '../styles/global.css';
 import { site } from '../config/site';
 
 export interface Props {
-  /** Overrides the document title; defaults to "Posture — <tagline>". */
+  /** Overrides the document title; defaults to "Posture · <tagline>". */
   readonly title?: string | undefined;
   readonly description?: string | undefined;
 }
 
 const {
-  title = `${site.name} — ${site.tagline}`,
+  title = `${site.name} · ${site.tagline}`,
   description = site.description,
 } = Astro.props;
 
@@ -41,7 +41,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     />
     <meta
       name="theme-color"
-      content="#121410"
+      content="#0f1113"
       media="(prefers-color-scheme: dark)"
     />
 
@@ -55,7 +55,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Your posture is bad right now — Posture, a free Mac app."
+      content="Your posture is bad right now. Posture, a free Mac app."
     />
     <meta name="twitter:card" content="summary_large_image" />
 
