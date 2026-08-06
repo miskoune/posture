@@ -1,5 +1,5 @@
 ---
-import GithubIcon from './GithubIcon.astro';
+import DownloadIcon from './DownloadIcon.astro';
 import { site } from '../config/site';
 
 /**
@@ -60,10 +60,10 @@ const included = [
 
     <a
       class="mt-11 inline-flex items-center gap-2.5 rounded-xl bg-ink px-6 py-3.5 text-[1rem] font-semibold text-paper no-underline transition-transform hover:-translate-y-0.5"
-      href={site.repo}
+      href={site.downloadUrl}
       rel="noopener"
     >
-      <GithubIcon class="h-[18px] w-[18px]" />
+      <DownloadIcon class="h-[18px] w-[18px]" />
       {site.ctaLabel}
     </a>
   </div>

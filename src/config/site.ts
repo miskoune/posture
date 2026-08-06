@@ -17,13 +17,17 @@ export const site: SiteConfig = {
 
   url: 'https://posture.miskoune.com',
   repo: 'https://github.com/miskoune/posture',
+  /** Always the newest signed build — GitHub rewrites `latest` per release,
+   *  so shipping a version never requires touching the site. */
+  downloadUrl:
+    'https://github.com/miskoune/posture/releases/latest/download/Posture.dmg',
   author: 'https://github.com/miskoune',
 
   requirements: 'macOS 14 Sonoma or later · Apple silicon',
 
   /** Rule 22 — one call to action on the page, and rule 28: it says exactly
    *  what pressing it does. */
-  ctaLabel: 'Star it on GitHub',
+  ctaLabel: 'Download for Mac',
   ctaNote:
-    'That is the whole signup. You will see the first build the day it ships.',
+    'Free, signed and notarized. Drag it to Applications — that is the whole install.',
 } as const;

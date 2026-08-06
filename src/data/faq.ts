@@ -27,6 +27,6 @@ export const faqs: readonly FaqItem[] = [
   },
   {
     q: 'When can I download it?',
-    a: 'There is no build yet — this page describes what is being made, and it says so rather than collecting emails for a product that does not exist. The work happens in the open, so the repository is where the first release will appear.',
+    a: 'Now. The download button on this page always serves the newest release — a signed and notarized DMG. Open it, drag Posture to Applications, and grant camera access when macOS asks. Every release also lives on the GitHub releases page with its changelog.',
   },
 ] as const;

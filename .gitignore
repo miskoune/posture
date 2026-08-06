@@ -7,3 +7,4 @@ dist/
 # Swift build output
 app/.build/
 app/build/
+.husky/_

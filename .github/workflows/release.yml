@@ -1,0 +1,85 @@
+name: Release macOS app
+
+# Any push to main touching app/ ships a release automatically:
+# semantic-release reads the (app)-scoped conventional commits since the last
+# tag, computes the next version, writes it into Info.plist, builds/signs/
+# notarizes the DMG (app/release.sh), publishes a GitHub Release with the DMG
+# attached, and commits the bumped Info.plist + CHANGELOG back to main.
+#
+# The website links releases/latest/download/Posture.dmg, so it always serves
+# the newest build with no site change.
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   MACOS_CERT_P12       Developer ID Application cert + key, .p12, base64
+#   MACOS_CERT_PASSWORD  password chosen when exporting the .p12
+#   NOTARY_APPLE_ID      Apple ID email
+#   NOTARY_PASSWORD      app-specific password from account.apple.com
+#   NOTARY_TEAM_ID       e.g. 633AVF5KFY
+
+on:
+  push:
+    branches: [main]
+    paths: ['app/**']
+
+concurrency:
+  group: release-app
+  cancel-in-progress: false
+
+jobs:
+  release:
+    # The version-bump commit semantic-release pushes touches app/ too;
+    # without this guard every release would trigger the next run.
+    if: "!startsWith(github.event.head_commit.message, 'chore: app version')"
+    runs-on: macos-15
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    env:
+      HUSKY: 0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # semantic-release walks the tag history to find the last release.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The runner has no keychain with our identity: import the .p12 into a
+      # fresh throwaway keychain that only lives for this job.
+      - name: Import signing certificate
+        env:
+          CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/release.keychain-db"
+          KEYCHAIN_PASSWORD="$(uuidgen)"
+
+          echo "$CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" \
+            -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          # Let codesign use the key without an interactive prompt.
+          security set-key-partition-list -S apple-tool:,apple: \
+            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" > /dev/null
+          security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+
+          rm "$RUNNER_TEMP/cert.p12"
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NOTARY_APPLE_ID: ${{ secrets.NOTARY_APPLE_ID }}
+          NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
+          NOTARY_TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
+        run: npx semantic-release

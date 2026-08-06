@@ -3,9 +3,31 @@
 A small macOS menu bar app that notices when you slouch and gives you one quiet
 nudge. Everything runs on-device — no video leaves the Mac, no account, no cloud.
 
-**Status: landing page only.** The desktop app has not been built yet. This
-repository currently holds the marketing site at
-[posture.miskoune.com](https://posture.miskoune.com).
+**[Download the latest release](https://github.com/miskoune/posture/releases/latest/download/Posture.dmg)**
+(signed and notarized DMG, macOS 14+, Apple silicon) · site at
+[posture.miskoune.com](https://posture.miskoune.com)
+
+This repository holds both halves:
+
+```
+app/   the Swift menu bar app (Swift Package, no Xcode project)
+src/   the Astro marketing site
+```
+
+## The app
+
+Vision framework pose landmarks, sampled a few frames a minute and compared
+against a baseline you calibrate once. Ships without the network entitlement, so
+it is incapable of phoning home — the OS enforces the privacy claim.
+
+```bash
+cd app
+./build.sh --run    # test, build, bundle, ad-hoc sign, launch
+swift test          # the core rules, no camera required
+```
+
+Architecture, design decisions and the core/shell boundary are documented in
+[`app/README.md`](app/README.md).
 
 ## The site
 
@@ -48,41 +70,34 @@ npm run typecheck   # .ts, native TS 7
 
 All four gate every deploy.
 
-### Layout
+## Releases
 
-```
-src/
-  layouts/Layout.astro        document shell, meta tags, JSON-LD
-  components/
-    Nav.astro
-    Hero.astro
-    PostureFigure.astro       the animated hero illustration (CSS only)
-    Privacy.astro
-    HowItWorks.astro
-    Features.astro
-    Faq.astro
-    Footer.astro
-  pages/index.astro
-  styles/global.css           design tokens + resets
-```
+Commits follow [Conventional Commits](https://www.conventionalcommits.org)
+(enforced by commitlint via a husky hook). The scope decides what ships:
 
-Colour carries meaning throughout: amber means slouching, green means upright.
-Both are defined once in `global.css` as `--warn` and `--good`.
+- `feat(app): …` / `fix(app): …` — releases the Mac app. On push to `main`,
+  `.github/workflows/release.yml` runs semantic-release on a macOS runner:
+  it computes the next version from the commits, writes it into `Info.plist`,
+  builds, signs, notarizes and staples the DMG (`app/release.sh`), attaches it
+  to a GitHub Release (tag `posture-app-vX.Y.Z`), and pushes a
+  `chore: app version X.Y.Z` commit with the changelog.
+- Any other scope, or none — website work; never bumps the app.
 
-## Deploying
+The site's download button points at `releases/latest/download/Posture.dmg`, a
+stable-name copy attached to every release, so shipping the app never requires
+touching the site.
+
+`app/release.sh` also runs locally if you have the Developer ID certificate and
+notarization credentials in your keychain — see the comment at the top of the
+script. CI needs five repository secrets, listed in
+`.github/workflows/release.yml`.
+
+## Deploying the site
 
 Pushing to `main` builds the site and rsyncs `dist/` to the server as an atomic
-release. See `.github/workflows/deploy.yml`.
-
-## The app
-
-Planned, not written:
-
-- Swift + SwiftUI menu bar app, macOS 14+, Apple silicon
-- Pose landmarks via Apple's Vision framework, on-device
-- Calibrate once to store a baseline pose as a few numbers, never an image
-- Sample a few frames a minute, compare against baseline, notify after sustained drift
-- Ship without the network entitlement so it is incapable of phoning home
+release (`.github/workflows/deploy.yml`). App-only pushes — including the
+version-bump commit the release workflow pushes back — skip the deploy via
+`paths-ignore`.
 
 ## Licence
 

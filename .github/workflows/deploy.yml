@@ -3,6 +3,10 @@ name: Build & Deploy Astro
 on:
   push:
     branches: [main]
+    # App-only pushes (including the "chore: app version" bump commit that the
+    # release workflow pushes back) don't change the website — skip the deploy.
+    paths-ignore:
+      - 'app/**'
   workflow_dispatch:
 
 concurrency:

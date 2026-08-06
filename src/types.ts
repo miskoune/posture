@@ -9,6 +9,7 @@ export interface SiteConfig {
   readonly description: string;
   readonly url: string;
   readonly repo: string;
+  readonly downloadUrl: string;
   readonly author: string;
   readonly requirements: string;
   readonly ctaLabel: string;
