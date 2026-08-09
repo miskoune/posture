@@ -1,5 +1,6 @@
 ---
 import { site } from '../config/site';
+import AppIcon from './AppIcon.astro';
 import DownloadIcon from './DownloadIcon.astro';
 
 /**
@@ -22,69 +23,36 @@ const links = [
       class="ps-float flex h-16 items-center justify-between gap-4"
       aria-label="Main"
     >
-    <a
-      class="flex items-center gap-2 text-[1.02rem] font-semibold tracking-tight no-underline"
-      href="/"
-    >
-      <!-- the app icon: the slouch settling back to square -->
-      <svg class="h-6 w-6" viewBox="0 0 100 100" aria-hidden="true">
-        <defs>
-          <linearGradient id="ps-ink" x1="0.5" y1="0" x2="0.5" y2="1">
-            <stop offset="0" stop-color="#25282d"></stop>
-            <stop offset="1" stop-color="#0c0d10"></stop>
-          </linearGradient>
-          <linearGradient id="ps-mint" x1="0.5" y1="0" x2="0.5" y2="1">
-            <stop offset="0" stop-color="#a9f0c4"></stop>
-            <stop offset="0.5" stop-color="#7bd8a5"></stop>
-            <stop offset="1" stop-color="#49a375"></stop>
-          </linearGradient>
-        </defs>
-        <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#ps-ink)"
-        ></rect>
-        <rect
-          x="27.4"
-          y="27.4"
-          width="45.2"
-          height="45.2"
-          rx="14"
-          transform="rotate(10 50 50)"
-          fill="none"
-          stroke="#484f55"
-          stroke-width="7"></rect>
-        <rect
-          x="29.9"
-          y="29.9"
-          width="40.2"
-          height="40.2"
-          rx="12.25"
-          fill="none"
-          stroke="url(#ps-mint)"
-          stroke-width="7.9"></rect>
-      </svg>
-      {site.name}
-    </a>
-
-    <div class="flex items-center gap-6">
-      {
-        links.map((link) => (
-          <a
-            class="hidden text-[0.9rem] text-muted no-underline transition-colors hover:text-ink sm:inline"
-            href={link.href}
-          >
-            {link.label}
-          </a>
-        ))
-      }
-
       <a
-        class="inline-flex items-center gap-2 rounded-[10px] bg-ink px-4 py-2 text-[0.88rem] font-medium text-paper no-underline transition-transform hover:-translate-y-px"
-        href={site.downloadUrl}
-        rel="noopener"
+        class="flex items-center gap-2 text-[1.02rem] font-semibold tracking-tight no-underline"
+        href="/"
       >
-        <DownloadIcon class="h-4 w-4" />
-        Download
+        <!-- the app icon: the slouch settling back to square -->
+        <AppIcon class="h-6 w-6" uid="nav" />
+        {site.name}
       </a>
-    </div>
+
+      <div class="flex items-center gap-6">
+        {
+          links.map((link) => (
+            <a
+              class="hidden text-[0.9rem] text-muted no-underline transition-colors hover:text-ink sm:inline"
+              href={link.href}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+
+        <a
+          class="inline-flex items-center gap-2 rounded-[10px] bg-ink px-4 py-2 text-[0.88rem] font-medium text-paper no-underline transition-transform hover:-translate-y-px"
+          href={site.downloadUrl}
+          rel="noopener"
+        >
+          <DownloadIcon class="h-4 w-4" />
+          Download
+        </a>
+      </div>
     </nav>
   </div>
 </header>

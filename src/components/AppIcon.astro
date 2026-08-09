@@ -1,0 +1,52 @@
+---
+/**
+ * The app icon: the charcoal squircle with the mint ring settling back to
+ * square. Drawn rather than linked so it inherits nothing and never 404s.
+ *
+ * SVG gradient ids are document-global, so each instance takes its own `uid`.
+ * Two icons sharing an id makes the second one steal the first one's paint.
+ */
+interface Props {
+  readonly class?: string | undefined;
+  readonly uid: string;
+}
+
+const { class: className = 'h-6 w-6', uid } = Astro.props;
+
+const ink = `ps-ink-${uid}`;
+const mint = `ps-mint-${uid}`;
+---
+
+<svg class={className} viewBox="0 0 100 100" aria-hidden="true">
+  <defs>
+    <linearGradient id={ink} x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#25282d"></stop>
+      <stop offset="1" stop-color="#0c0d10"></stop>
+    </linearGradient>
+    <linearGradient id={mint} x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#a9f0c4"></stop>
+      <stop offset="0.5" stop-color="#7bd8a5"></stop>
+      <stop offset="1" stop-color="#49a375"></stop>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="96" height="96" rx="22" fill={`url(#${ink})`}></rect>
+  <rect
+    x="27.4"
+    y="27.4"
+    width="45.2"
+    height="45.2"
+    rx="14"
+    transform="rotate(10 50 50)"
+    fill="none"
+    stroke="#484f55"
+    stroke-width="7"></rect>
+  <rect
+    x="29.9"
+    y="29.9"
+    width="40.2"
+    height="40.2"
+    rx="12.25"
+    fill="none"
+    stroke={`url(#${mint})`}
+    stroke-width="7.9"></rect>
+</svg>

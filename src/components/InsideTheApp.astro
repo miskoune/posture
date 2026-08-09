@@ -1,0 +1,578 @@
+---
+import AppIcon from './AppIcon.astro';
+import CameraView from './CameraView.astro';
+import MenuBarStrip from './MenuBarStrip.astro';
+
+/**
+ * The app is a square in the menu bar, so there is nothing to screenshot that
+ * would still be true after a release. These are redrawn in the page's own
+ * tokens instead: they follow dark mode, stay sharp on a phone, cost no image
+ * bytes, and can be diffed against the Swift when either side moves.
+ *
+ * Every string and every value below is lifted from the app sources:
+ * `StatusMenuController` for the menu, `NotificationNudger` for the banner,
+ * `DashboardWindowController` for the sidebar, `UserDefaultsSettings` for the
+ * settings shown selected. Copied verbatim: if a string here stops matching
+ * the Swift, one of the two is wrong and it is worth knowing which.
+ */
+
+/** Submenus, drawn with the disclosure arrow macOS puts on them. */
+const submenus = [
+  'Sensitivity',
+  'Wait before notifying',
+  'Remind again while bad',
+] as const;
+
+/** The shipped defaults, so the mock matches a fresh install. */
+const chosen = [
+  { label: 'Sensitivity', value: 'Normal' },
+  { label: 'Wait before notifying', value: '1 minute' },
+  { label: 'Remind again while bad', value: 'Every 5 minutes' },
+] as const;
+---
+
+<section class="ps-screen border-t border-line" id="ps-app">
+  <div class="ps-shell">
+    <p class="ps-kicker">Inside the app</p>
+
+    <h2 class="mt-4 max-w-[26ch] text-[clamp(1.9rem,4.2vw,2.9rem)]">
+      Almost all of it happens in the menu bar.
+    </h2>
+
+    <p class="mt-6 max-w-[58ch] text-[1.08rem] text-muted">
+      A square next to the clock, one banner when you drift, and a small mirror
+      so you can see what it saw. There is a window behind all that, and you can
+      go a month without opening it.
+    </p>
+
+    <div class="mt-12 grid gap-6 lg:grid-cols-3">
+      <!-- 1 · the menu -->
+      <figure class="ps-fig">
+        <div class="ps-stage">
+          <MenuBarStrip active badge="check" />
+
+          <div class="ps-under">
+            <div class="ps-pop ps-menu">
+              <p class="ps-menu-state">Good posture</p>
+              <hr class="ps-sep" />
+              <p class="ps-menu-row is-hot">Open Dashboard</p>
+              <p class="ps-menu-row">Calibrate, sit how you want to sit</p>
+              <p class="ps-menu-row">Pause</p>
+              <hr class="ps-sep" />
+              {
+                submenus.map((item) => (
+                  <p class="ps-menu-row ps-menu-more">
+                    {item}
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  </p>
+                ))
+              }
+              <p class="ps-menu-row ps-menu-on">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 12.5l5.2 5.2L20 7"></path>
+                </svg>
+                Show preview when notified
+              </p>
+              <hr class="ps-sep" />
+              <p class="ps-menu-row">Quit Posture</p>
+            </div>
+          </div>
+        </div>
+
+        <figcaption class="ps-cap">
+          <strong>The menu.</strong> The verdict on top, then the only four things
+          worth deciding. No preferences window, because there is nothing left to
+          put in one.
+        </figcaption>
+      </figure>
+
+      <!-- 2 · the nudge -->
+      <figure class="ps-fig">
+        <div class="ps-stage">
+          <MenuBarStrip badge="cross" />
+
+          <div class="ps-under">
+            <div class="ps-pop ps-toast">
+              <!-- Tailwind rather than a scoped rule: scoped styles do not
+                   reach a child component's root element. -->
+              <AppIcon
+                class="h-[1.9rem] w-[1.9rem] shrink-0 rounded-[7px]"
+                uid="toast"
+              />
+              <div class="ps-toast-body">
+                <p class="ps-toast-head">
+                  <span>Posture</span>
+                  <span class="ps-toast-time">now</span>
+                </p>
+                <p class="ps-toast-text">Bad posture for a minute. Sit back.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <figcaption class="ps-cap">
+          <strong>The nudge.</strong> One banner, after a full minute of drift rather
+          than on a timer. Stay folded over and it says so again five minutes later,
+          in place of the first banner rather than under it. Sit back and it withdraws
+          itself.
+        </figcaption>
+      </figure>
+
+      <!-- 3 · the corner mirror -->
+      <figure class="ps-fig">
+        <div class="ps-stage">
+          <MenuBarStrip badge="cross" />
+
+          <div class="ps-under ps-under-end">
+            <div class="ps-mirror"><CameraView /></div>
+          </div>
+        </div>
+
+        <figcaption class="ps-cap">
+          <strong>The mirror.</strong> 240 by 170 points at the bottom right, only
+          while a nudge stands. It shows the box it measured and the height you calibrated,
+          so you can steer back without opening anything.
+        </figcaption>
+      </figure>
+    </div>
+
+    <!-- 4 · the window -->
+    <figure class="ps-fig mt-6">
+      <div class="ps-win">
+        <div class="ps-titlebar">
+          <span class="ps-lights" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <p class="ps-wintitle">Posture</p>
+        </div>
+
+        <div class="ps-win-body">
+          <div class="ps-win-cam"><CameraView /></div>
+
+          <div class="ps-side">
+            <p class="ps-verdict">Good posture</p>
+            <p class="ps-detail">
+              slump +3% &nbsp; lean -1% &nbsp; tilt +2% &nbsp; tolerance 15%
+            </p>
+
+            <hr class="ps-sep" />
+            <p class="ps-label">This session</p>
+            <p class="ps-stat">
+              <span>Good posture</span><span class="ps-good">4h 12m</span>
+            </p>
+            <p class="ps-stat">
+              <span>Bad posture</span><span class="ps-bad">41m</span>
+            </p>
+
+            <hr class="ps-sep" />
+            {
+              chosen.map((setting) => (
+                <Fragment>
+                  <p class="ps-label">{setting.label}</p>
+                  <p class="ps-select">
+                    {setting.value}
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M8 10l4-4 4 4M8 14l4 4 4-4" />
+                    </svg>
+                  </p>
+                </Fragment>
+              ))
+            }
+
+            <p class="ps-check">
+              <span class="ps-box" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M4 12.5l5.2 5.2L20 7"></path>
+                </svg>
+              </span>
+              Show preview when notified
+            </p>
+
+            <hr class="ps-sep" />
+            <p class="ps-button">Calibrate</p>
+            <p class="ps-button">Pause</p>
+          </div>
+        </div>
+      </div>
+
+      <figcaption class="ps-cap ps-cap-wide">
+        <strong>The dashboard.</strong> Open it and the app grows a Dock icon; close
+        it and the camera in it stops. The numbers under the verdict are the entire
+        judgement: how far each axis has drifted, and the tolerance it is being measured
+        against. Nothing is stored, so there is no history to leak.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  /* ------------------------------------------------------------- the shell */
+
+  .ps-fig {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  /* A corner of the screen: menu bar across the top, everything else hanging
+   * from it. Same height for all three so the captions line up. */
+  .ps-stage {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 19.5rem;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    background: var(--sunk);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .ps-under {
+    padding: 0.45rem 0.6rem 1rem;
+  }
+
+  .ps-under-end {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    padding-bottom: 0.6rem;
+  }
+
+  .ps-cap {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .ps-cap-wide {
+    max-width: 62ch;
+  }
+
+  .ps-cap strong {
+    font-weight: 620;
+    color: var(--ink);
+  }
+
+  /* Anything that hangs off the menu bar. `margin-right` lands its right edge
+   * under the status item: the clock plus one gap plus the bar's padding. The
+   * width subtracts that inset so a narrow phone can never push it off the
+   * left edge. */
+  .ps-pop {
+    width: min(15.5rem, calc(100% - 2.6rem));
+    margin-left: auto;
+    margin-right: 2.55rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: color-mix(in oklab, var(--raised) 92%, transparent);
+    box-shadow: var(--shadow-lg);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  /* -------------------------------------------------------------- the menu */
+
+  .ps-menu {
+    padding: 0.3rem;
+    font-size: 0.74rem;
+    line-height: 1.35;
+  }
+
+  .ps-menu-state,
+  .ps-menu-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.26rem 0.45rem;
+    border-radius: 5px;
+  }
+
+  .ps-menu-state {
+    font-weight: 620;
+    color: var(--ink);
+  }
+
+  .ps-menu-row {
+    color: var(--muted);
+  }
+
+  /* One row under the pointer, so the mock reads as a live menu, not a list. */
+  .ps-menu-row.is-hot {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .ps-menu-more {
+    justify-content: space-between;
+  }
+
+  .ps-menu-more svg,
+  .ps-menu-on svg {
+    width: 0.7rem;
+    height: 0.7rem;
+    flex: 0 0 auto;
+  }
+
+  .ps-menu-on svg {
+    color: var(--accent);
+  }
+
+  .ps-sep {
+    height: 0;
+    margin: 0.3rem 0.2rem;
+    border: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  /* ------------------------------------------------------------- the nudge */
+
+  .ps-toast {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    padding: 0.7rem 0.8rem;
+    border-radius: 14px;
+  }
+
+  .ps-toast-body {
+    min-width: 0;
+    line-height: 1.35;
+  }
+
+  .ps-toast-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.76rem;
+    font-weight: 620;
+    color: var(--ink);
+  }
+
+  .ps-toast-time {
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .ps-toast-text {
+    margin-top: 0.1rem;
+    font-size: 0.76rem;
+    color: var(--muted);
+  }
+
+  /* ------------------------------------------------------------ the mirror */
+
+  /* The panel is 240 by 170 points; it keeps that shape at every width. */
+  .ps-mirror {
+    width: min(15rem, 100%);
+    margin-left: auto;
+    aspect-ratio: 240 / 170;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ------------------------------------------------------------ the window */
+
+  .ps-win {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    background: var(--raised);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .ps-titlebar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: 2.3rem;
+    padding-inline: 0.85rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--sunk);
+  }
+
+  .ps-lights {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .ps-lights i {
+    width: 0.66rem;
+    height: 0.66rem;
+    border-radius: 50%;
+    background: var(--line-strong);
+  }
+
+  .ps-wintitle {
+    font-size: 0.8rem;
+    font-weight: 620;
+  }
+
+  .ps-win-body {
+    display: grid;
+  }
+
+  .ps-win-cam {
+    aspect-ratio: 16 / 10;
+  }
+
+  .ps-side {
+    padding: 1.05rem 1.1rem 1.2rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+  }
+
+  /* The real window is 860 by 520 with a 260pt sidebar. Below that it stacks,
+   * because a 260pt column on a phone leaves the camera a slot too narrow to
+   * read. */
+  @media (min-width: 40rem) {
+    .ps-win-body {
+      grid-template-columns: 1fr 15.5rem;
+    }
+
+    .ps-win-cam {
+      aspect-ratio: auto;
+    }
+
+    .ps-side {
+      border-top: 0;
+      border-left: 1px solid var(--line);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .ps-win-body {
+      grid-template-columns: 1fr 17rem;
+    }
+  }
+
+  .ps-verdict {
+    font-size: 1.02rem;
+    font-weight: 620;
+    line-height: 1.2;
+    color: var(--accent);
+  }
+
+  .ps-detail {
+    margin-top: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+
+  .ps-label {
+    margin-top: 0.7rem;
+    font-size: 0.62rem;
+    font-weight: 620;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .ps-stat {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.35rem;
+  }
+
+  .ps-good,
+  .ps-bad {
+    font-variant-numeric: tabular-nums;
+    font-weight: 620;
+  }
+
+  .ps-good {
+    color: var(--accent);
+  }
+
+  /* The app paints this one orange. The page has three colours and no fourth
+   * hue to spend, so bad time carries weight instead of a warning colour. */
+  .ps-bad {
+    color: var(--ink);
+  }
+
+  .ps-select,
+  .ps-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: var(--raised);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .ps-select svg {
+    width: 0.8rem;
+    height: 0.8rem;
+    flex: 0 0 auto;
+    color: var(--muted);
+  }
+
+  .ps-button {
+    justify-content: center;
+    font-weight: 560;
+  }
+
+  .ps-check {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.7rem;
+  }
+
+  .ps-box {
+    display: grid;
+    place-items: center;
+    width: 0.9rem;
+    height: 0.9rem;
+    flex: 0 0 auto;
+    border-radius: 4px;
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .ps-box svg {
+    width: 0.62rem;
+    height: 0.62rem;
+  }
+</style>

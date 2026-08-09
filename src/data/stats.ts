@@ -20,7 +20,7 @@ export const stats: readonly Stat[] = [
   },
   {
     value: '1',
-    label: 'nudge, then silence',
-    note: 'One banner when you drift. No streak, no daily score, no badge turning red.',
+    label: 'banner at a time',
+    note: 'A reminder replaces the banner already on screen instead of stacking a second one, and it is withdrawn the moment you sit back.',
   },
 ] as const;

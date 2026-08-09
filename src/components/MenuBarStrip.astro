@@ -1,0 +1,110 @@
+---
+/**
+ * The right-hand end of the macOS menu bar, redrawn: two system glyphs, the
+ * Posture status item, the clock. Shared by every mock in the app section so
+ * all three read as the same corner of the same screen.
+ *
+ * The status item is a monochrome rounded square with the verdict sitting
+ * beside it, which is what `composedIcon` in StatusMenuController actually
+ * draws: an SF Symbol template plus a checkmark or a cross, never the colour
+ * icon. The menu bar tints templates itself, so it is never green up there.
+ */
+interface Props {
+  /** macOS inverts the status item while its menu is open. */
+  readonly active?: boolean | undefined;
+  readonly badge?: 'check' | 'cross' | undefined;
+  readonly clock?: string | undefined;
+}
+
+const { active = false, badge, clock = '21:41' } = Astro.props;
+---
+
+<div class="ps-menubar flex items-center justify-end gap-3 px-2.5">
+  <svg
+    class="h-3 w-3 opacity-65"
+    viewBox="0 0 16 16"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <rect x="1.5" y="3.2" width="13" height="3.6" rx="1.8"></rect>
+    <rect x="1.5" y="9.2" width="13" height="3.6" rx="1.8"></rect>
+  </svg>
+
+  <svg
+    class="h-3 w-3.5 opacity-65"
+    viewBox="0 0 20 16"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    aria-hidden="true"
+  >
+    <path d="M2.4 6.4a10.6 10.6 0 0 1 15.2 0"></path>
+    <path d="M5.4 9.6a6.6 6.6 0 0 1 9.2 0"></path>
+    <circle cx="10" cy="12.7" r="1" fill="currentColor" stroke="none"></circle>
+  </svg>
+
+  <span class:list={['ps-item', active && 'is-active']}>
+    <svg
+      class="h-3.5 w-3.5"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      aria-hidden="true"
+    >
+      <rect x="2.3" y="2.3" width="11.4" height="11.4" rx="3.2"></rect>
+    </svg>
+
+    {
+      badge && (
+        <svg
+          class="h-2.5 w-2.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          {badge === 'check' ? (
+            <path d="M4 12.5l5.2 5.2L20 7" />
+          ) : (
+            <path d="M6 6l12 12M18 6L6 18" />
+          )}
+        </svg>
+      )
+    }
+  </span>
+
+  <span class="ps-clock tabular-nums opacity-65">{clock}</span>
+</div>
+
+<style>
+  .ps-menubar {
+    height: 1.75rem;
+    font-size: 0.66rem;
+    color: var(--ink);
+    /* Translucent, like the real bar sitting over the desktop picture. */
+    background: color-mix(in oklab, var(--raised) 74%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ps-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.1rem 0.28rem;
+    border-radius: 4px;
+  }
+
+  .ps-item.is-active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .ps-clock {
+    letter-spacing: 0.01em;
+  }
+</style>

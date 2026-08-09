@@ -10,10 +10,10 @@ export const site: SiteConfig = {
    *  which is the entire loop demonstrated before a feature is named. */
   headline: 'Your posture is bad right now.',
   subhead:
-    'Your Mac already has a camera pointed at your face. Posture uses it to catch the slow slide forward, says one thing, then shuts up.',
+    'Your Mac already has a camera pointed at your face. Posture uses it to catch the slow slide forward, says one thing, and stops the moment you sit back.',
 
   description:
-    'A Mac menu bar app that tells you when your posture goes bad. The camera feed never leaves the Mac: 0 bytes uploaded, 0 accounts, 1 nudge. Free and open source.',
+    'A Mac menu bar app that tells you when your posture goes bad. The camera feed never leaves the Mac: 0 bytes uploaded, 0 accounts, 1 banner at a time. Free and open source.',
 
   url: 'https://posture.miskoune.com',
   repo: 'https://github.com/miskoune/posture',

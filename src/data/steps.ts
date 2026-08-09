@@ -15,6 +15,6 @@ export const steps: readonly Step[] = [
   {
     n: '03',
     title: 'You drift. It says one thing.',
-    body: 'A single banner, once. You sit back and it goes quiet. Nothing to dismiss, nothing to keep up, nothing waiting for you tomorrow morning.',
+    body: 'One banner, replaced rather than stacked if you stay folded over. You sit back and it is withdrawn, from the screen and from Notification Center. Nothing to dismiss, nothing to keep up, nothing waiting for you tomorrow morning.',
   },
 ] as const;
