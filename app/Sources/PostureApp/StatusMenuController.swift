@@ -74,7 +74,7 @@ final class StatusMenuController {
         let look = describe(state)
         stateItem.title = look.title
         pauseItem.title = isPaused ? "Resume" : "Pause"
-        statusItem.button?.toolTip = "Posture — \(look.title)"
+        statusItem.button?.toolTip = "Posture: \(look.title)"
         apply(symbolNamed: look.symbol, badge: look.badge)
     }
 
@@ -85,7 +85,7 @@ final class StatusMenuController {
         case .needsCalibration:
             return ("Not calibrated yet", "app", nil)
         case .calibrating(let collected, let needed):
-            return ("Calibrating \(collected)/\(needed) — hold still", "app", nil)
+            return ("Calibrating \(collected)/\(needed), hold still", "app", nil)
         case .paused:
             return ("Paused", "pause.circle", nil)
         case .cannotSee:
@@ -172,7 +172,7 @@ final class StatusMenuController {
         menu.addItem(dashboard)
 
         let calibrate = NSMenuItem(
-            title: "Calibrate — sit how you want to sit",
+            title: "Calibrate, sit how you want to sit",
             action: #selector(calibrateClicked),
             keyEquivalent: ""
         )

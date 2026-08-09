@@ -76,7 +76,7 @@ final class NotificationNudger: NudgeDelivering {
             ]
         case ..<15:
             return [
-                "Still bad posture — \(duration) now. Sit up.",
+                "Still bad posture, \(duration) now. Sit up.",
                 "Bad posture for \(duration). Time to sit back.",
                 "\(duration.capitalized) of bad posture. Reset your position."
             ]

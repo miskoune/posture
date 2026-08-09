@@ -385,7 +385,7 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
         )
 
         if drift.exceeds(settings.tolerance) {
-            return ("Bad posture — \(advice(for: drift))", detail, warnColor)
+            return ("Bad posture, \(advice(for: drift))", detail, warnColor)
         }
         return ("Good posture", detail, goodColor)
     }

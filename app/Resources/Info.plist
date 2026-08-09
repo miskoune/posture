@@ -23,7 +23,7 @@
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Posture measures the angle of your neck and shoulders to tell you when you slouch. Frames are analysed in memory and discarded — nothing is recorded, and the app has no network access.</string>
+	<string>Posture measures the angle of your neck and shoulders to tell you when you slouch. Frames are analysed in memory and discarded. Nothing is recorded, and the app has no network access.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>MIT licensed. https://github.com/miskoune/posture</string>
 </dict>
