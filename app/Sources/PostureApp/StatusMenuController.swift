@@ -129,15 +129,6 @@ final class StatusMenuController {
         dashboard.target = self
         menu.addItem(dashboard)
 
-        let calibrate = NSMenuItem(
-            title: "Calibrate",
-            action: #selector(calibrateClicked),
-            keyEquivalent: ""
-        )
-        calibrate.target = self
-        calibrate.toolTip = "Sit the way you want to sit, then click"
-        menu.addItem(calibrate)
-
         pauseItem.action = #selector(pauseClicked)
         pauseItem.target = self
         menu.addItem(pauseItem)
@@ -154,10 +145,6 @@ final class StatusMenuController {
     }
 
     // MARK: - Clicks
-
-    @objc private func calibrateClicked() {
-        onCommand?(.calibrate)
-    }
 
     @objc private func dashboardClicked() {
         onCommand?(.showDashboard)

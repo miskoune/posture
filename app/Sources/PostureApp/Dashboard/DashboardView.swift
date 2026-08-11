@@ -44,15 +44,9 @@ struct DashboardView: View {
             header
                 .padding(.vertical, 6)
 
-            Section("Monitor") {
-                row(.camera)
-            }
-            Section("Activity") {
-                row(.stats)
-            }
-            Section("Configure") {
-                row(.settings)
-            }
+            row(.camera)
+            row(.stats)
+            row(.settings)
         }
         .listStyle(.sidebar)
         .navigationSplitViewColumnWidth(min: 180, ideal: 210, max: 280)
