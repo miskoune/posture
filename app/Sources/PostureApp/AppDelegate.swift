@@ -32,12 +32,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let menu = StatusMenuController(
-            tolerance: settings.tolerance,
-            patience: settings.patience,
-            nudgeRepeat: settings.nudgeRepeat,
-            showPreviewOnNudge: settings.showPreviewOnNudge
-        )
+        let menu = StatusMenuController()
         menu.onCommand = { [weak self] command in
             self?.handle(command)
         }
@@ -62,6 +57,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
             self?.startSampling()
         }
+
+        // Launching an app should visibly answer. The dashboard comes up
+        // right away; closing it drops the app back to the menu bar.
+        dashboard.show()
+    }
+
+    /// Opening the app again from Finder or the Dock while it is already
+    /// running brings the dashboard back instead of doing nothing.
+    func applicationShouldHandleReopen(
+        _ sender: NSApplication,
+        hasVisibleWindows flag: Bool
+    ) -> Bool {
+        if !flag {
+            dashboard?.show()
+        }
+        return true
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -126,26 +137,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             render(monitor.state)
         case .setTolerance(let value):
             settings.tolerance = value
-            syncMenuChoices()
         case .setPatience(let value):
             settings.patience = value
-            syncMenuChoices()
         case .setNudgeRepeat(let value):
             settings.nudgeRepeat = value
-            syncMenuChoices()
         case .togglePreviewOnNudge:
             settings.showPreviewOnNudge.toggle()
-            syncMenuChoices()
         }
-    }
-
-    private func syncMenuChoices() {
-        menu?.syncChoices(
-            tolerance: settings.tolerance,
-            patience: settings.patience,
-            nudgeRepeat: settings.nudgeRepeat,
-            showPreviewOnNudge: settings.showPreviewOnNudge
-        )
     }
 
     private func render(_ state: PostureState) {

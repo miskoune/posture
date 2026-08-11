@@ -1,8 +1,8 @@
 import AppKit
 import PostureCore
 
-/// The menu bar. There is no window, no dock icon and no preferences pane —
-/// everything the app can do fits in one menu.
+/// The menu bar: the current verdict and the few actions worth reaching for
+/// quickly. Everything configurable lives in the dashboard's settings page.
 ///
 /// Presentation only: it renders a `PostureState` and reports what the user
 /// clicked. Every decision belongs to `PostureMonitor`.
@@ -23,49 +23,11 @@ final class StatusMenuController {
     )
     private let stateItem = NSMenuItem(title: "Starting…", action: nil, keyEquivalent: "")
     private let pauseItem = NSMenuItem(title: "Pause", action: nil, keyEquivalent: "")
-    private var toleranceMenu: NSMenu?
-    private var patienceMenu: NSMenu?
-    private var nudgeRepeatMenu: NSMenu?
-    private let previewToggleItem = NSMenuItem(
-        title: "Show preview when notified",
-        action: nil,
-        keyEquivalent: ""
-    )
-
-    private let tolerances: [(label: String, value: Double)] = [
-        ("Relaxed", 0.25),
-        ("Normal", 0.15),
-        ("Strict", 0.08)
-    ]
-
-    private let patiences: [(label: String, value: Double)] = [
-        ("10 seconds", 10),
-        ("30 seconds", 30),
-        ("1 minute", 60),
-        ("2 minutes", 120),
-        ("5 minutes", 300),
-        ("15 minutes", 900)
-    ]
-
-    private let nudgeRepeats: [(label: String, value: Double)] = [
-        ("Only once", 0),
-        ("Every 30 seconds", 30),
-        ("Every minute", 60),
-        ("Every 2 minutes", 120),
-        ("Every 5 minutes", 300),
-        ("Every 10 minutes", 600)
-    ]
 
     var onCommand: ((Command) -> Void)?
 
-    init(
-        tolerance: Double,
-        patience: TimeInterval,
-        nudgeRepeat: TimeInterval,
-        showPreviewOnNudge: Bool
-    ) {
-        buildMenu(tolerance: tolerance, patience: patience, nudgeRepeat: nudgeRepeat)
-        previewToggleItem.state = showPreviewOnNudge ? .on : .off
+    init() {
+        buildMenu()
     }
 
     // MARK: - Rendering
@@ -153,18 +115,14 @@ final class StatusMenuController {
 
     // MARK: - Building
 
-    private func buildMenu(
-        tolerance: Double,
-        patience: TimeInterval,
-        nudgeRepeat: TimeInterval
-    ) {
+    private func buildMenu() {
         let menu = NSMenu()
 
         menu.addItem(stateItem)
         menu.addItem(.separator())
 
         let dashboard = NSMenuItem(
-            title: "Open Dashboard",
+            title: "Settings",
             action: #selector(dashboardClicked),
             keyEquivalent: ""
         )
@@ -172,48 +130,17 @@ final class StatusMenuController {
         menu.addItem(dashboard)
 
         let calibrate = NSMenuItem(
-            title: "Calibrate, sit how you want to sit",
+            title: "Calibrate",
             action: #selector(calibrateClicked),
             keyEquivalent: ""
         )
         calibrate.target = self
+        calibrate.toolTip = "Sit the way you want to sit, then click"
         menu.addItem(calibrate)
 
         pauseItem.action = #selector(pauseClicked)
         pauseItem.target = self
         menu.addItem(pauseItem)
-
-        menu.addItem(.separator())
-        let toleranceItem = choiceMenu(
-            title: "Sensitivity",
-            options: tolerances,
-            current: tolerance,
-            action: #selector(toleranceClicked(_:))
-        )
-        toleranceMenu = toleranceItem.submenu
-        menu.addItem(toleranceItem)
-
-        let patienceItem = choiceMenu(
-            title: "Wait before notifying",
-            options: patiences,
-            current: patience,
-            action: #selector(patienceClicked(_:))
-        )
-        patienceMenu = patienceItem.submenu
-        menu.addItem(patienceItem)
-
-        let nudgeRepeatItem = choiceMenu(
-            title: "Remind again while bad",
-            options: nudgeRepeats,
-            current: nudgeRepeat,
-            action: #selector(nudgeRepeatClicked(_:))
-        )
-        nudgeRepeatMenu = nudgeRepeatItem.submenu
-        menu.addItem(nudgeRepeatItem)
-
-        previewToggleItem.action = #selector(previewToggleClicked)
-        previewToggleItem.target = self
-        menu.addItem(previewToggleItem)
 
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(
@@ -226,27 +153,6 @@ final class StatusMenuController {
         apply(symbolNamed: "app")
     }
 
-    private func choiceMenu(
-        title: String,
-        options: [(label: String, value: Double)],
-        current: Double,
-        action: Selector
-    ) -> NSMenuItem {
-        let parent = NSMenuItem(title: title, action: nil, keyEquivalent: "")
-        let menu = NSMenu()
-
-        for option in options {
-            let item = NSMenuItem(title: option.label, action: action, keyEquivalent: "")
-            item.target = self
-            item.representedObject = option.value
-            item.state = (option.value == current) ? .on : .off
-            menu.addItem(item)
-        }
-
-        parent.submenu = menu
-        return parent
-    }
-
     // MARK: - Clicks
 
     @objc private func calibrateClicked() {
@@ -257,52 +163,7 @@ final class StatusMenuController {
         onCommand?(.showDashboard)
     }
 
-    /// Reflects values changed elsewhere (the dashboard) in the checkmarks.
-    func syncChoices(
-        tolerance: Double,
-        patience: TimeInterval,
-        nudgeRepeat: TimeInterval,
-        showPreviewOnNudge: Bool
-    ) {
-        tick(value: tolerance, in: toleranceMenu)
-        tick(value: patience, in: patienceMenu)
-        tick(value: nudgeRepeat, in: nudgeRepeatMenu)
-        previewToggleItem.state = showPreviewOnNudge ? .on : .off
-    }
-
-    private func tick(value: Double, in menu: NSMenu?) {
-        menu?.items.forEach {
-            $0.state = (($0.representedObject as? Double) == value) ? .on : .off
-        }
-    }
-
     @objc private func pauseClicked() {
         onCommand?(.togglePause)
-    }
-
-    @objc private func toleranceClicked(_ sender: NSMenuItem) {
-        guard let value = sender.representedObject as? Double else { return }
-        tick(sender)
-        onCommand?(.setTolerance(value))
-    }
-
-    @objc private func patienceClicked(_ sender: NSMenuItem) {
-        guard let value = sender.representedObject as? Double else { return }
-        tick(sender)
-        onCommand?(.setPatience(value))
-    }
-
-    @objc private func nudgeRepeatClicked(_ sender: NSMenuItem) {
-        guard let value = sender.representedObject as? Double else { return }
-        tick(sender)
-        onCommand?(.setNudgeRepeat(value))
-    }
-
-    @objc private func previewToggleClicked() {
-        onCommand?(.togglePreviewOnNudge)
-    }
-
-    private func tick(_ sender: NSMenuItem) {
-        sender.menu?.items.forEach { $0.state = ($0 === sender) ? .on : .off }
     }
 }
