@@ -13,6 +13,29 @@ struct DashboardView: View {
         } detail: {
             detail
         }
+        // On every page, not just the camera: pause and calibrate are always
+        // relevant, and a page without toolbar items would collapse to the
+        // compact title bar, making the title jump in size between tabs.
+        .toolbar {
+            ToolbarItemGroup {
+                Button {
+                    model.togglePause()
+                } label: {
+                    Label(
+                        model.isPaused ? "Resume" : "Pause",
+                        systemImage: model.isPaused ? "play.fill" : "pause.fill"
+                    )
+                }
+                .help(model.isPaused ? "Resume monitoring" : "Pause monitoring")
+
+                Button {
+                    model.calibrate()
+                } label: {
+                    Label("Calibrate", systemImage: "scope")
+                }
+                .help("Sit the way you want to sit, then click")
+            }
+        }
         .frame(minWidth: 760, minHeight: 480)
     }
 
@@ -75,40 +98,30 @@ struct DashboardView: View {
 
 // MARK: - Camera
 
-/// The live view: camera filling the page, the verdict floating over it, and
-/// pause/calibrate within reach in the toolbar.
+/// The live view: the camera in a rounded card, the verdict floating over it,
+/// and pause/calibrate within reach in the toolbar. Laid out with the same
+/// padded-card language as Stats and Settings, so the window chrome stays
+/// identical across pages instead of the video bleeding edge to edge.
 struct MonitorPage: View {
     @ObservedObject var model: DashboardModel
     let previewView: PreviewView
 
     var body: some View {
-        CameraPreview(view: previewView)
-            .background(.black)
-            .overlay(alignment: .bottom) {
-                statusCard
-                    .padding(16)
-            }
-            .navigationTitle("Camera")
-            .toolbar {
-                ToolbarItemGroup {
-                    Button {
-                        model.togglePause()
-                    } label: {
-                        Label(
-                            model.isPaused ? "Resume" : "Pause",
-                            systemImage: model.isPaused ? "play.fill" : "pause.fill"
-                        )
-                    }
-                    .help(model.isPaused ? "Resume monitoring" : "Pause monitoring")
-
-                    Button {
-                        model.calibrate()
-                    } label: {
-                        Label("Calibrate", systemImage: "scope")
-                    }
-                    .help("Sit the way you want to sit, then click")
+        VStack(spacing: 0) {
+            Spacer(minLength: 0)
+            CameraPreview(view: previewView)
+                .aspectRatio(16 / 9, contentMode: .fit)
+                .background(.black)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(alignment: .bottom) {
+                    statusCard
+                        .padding(16)
                 }
-            }
+            Spacer(minLength: 0)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .navigationTitle("Camera")
     }
 
     private var statusCard: some View {

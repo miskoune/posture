@@ -46,9 +46,15 @@ final class DashboardWindowController: NSWindowController, NSWindowDelegate {
         let hosting = NSHostingController(
             rootView: DashboardView(model: model, previewView: previewView)
         )
+        // Never let SwiftUI drive the window frame. Each page reports a
+        // different ideal/minimum size (the camera page hosts an AppKit
+        // view), and any sizing option makes the window jump when tabs
+        // switch. The window enforces its own minimum instead.
+        hosting.sizingOptions = []
         let window = NSWindow(contentViewController: hosting)
         window.title = "Posture"
         window.setContentSize(NSSize(width: 920, height: 560))
+        window.contentMinSize = NSSize(width: 760, height: 480)
         window.toolbarStyle = .unified
         window.titlebarSeparatorStyle = .automatic
         window.isReleasedWhenClosed = false
