@@ -126,7 +126,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Wiring
 
-    private func handle(_ command: StatusMenuController.Command) {
+    private func handle(_ command: AppCommand) {
         switch command {
         case .calibrate:
             monitor.beginCalibration()

@@ -36,7 +36,6 @@ struct DashboardView: View {
                 .help("Sit the way you want to sit, then click")
             }
         }
-        .frame(minWidth: 760, minHeight: 480)
     }
 
     private var sidebar: some View {

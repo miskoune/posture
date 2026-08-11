@@ -3,9 +3,9 @@ import PostureCore
 
 /// Everything the SwiftUI dashboard renders, mirrored from `SettingsStoring`
 /// and `PostureMonitor` by the window controller once a second and on every
-/// detection. Mutations go out through `onCommand`, reusing the menu's
-/// vocabulary so `AppDelegate` handles both sources identically; nothing here
-/// writes settings directly.
+/// detection. Mutations go out through `onCommand` as `AppCommand`s, the same
+/// vocabulary as the menu bar, so `AppDelegate` handles both sources
+/// identically; nothing here writes settings directly.
 final class DashboardModel: ObservableObject {
     enum Page: String, CaseIterable, Identifiable {
         case camera
@@ -63,7 +63,7 @@ final class DashboardModel: ObservableObject {
     @Published var nudgeRepeat = UserDefaultsSettings.defaultNudgeRepeat
     @Published var showPreviewOnNudge = true
 
-    var onCommand: ((StatusMenuController.Command) -> Void)?
+    var onCommand: ((AppCommand) -> Void)?
 
     // MARK: - Intents
 

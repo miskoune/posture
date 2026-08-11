@@ -1,5 +1,4 @@
 import AppKit
-import AVFoundation
 import PostureCore
 
 /// The corner mirror. When a nudge fires it appears at the bottom-right of
@@ -9,12 +8,12 @@ import PostureCore
 ///
 /// A borderless, non-activating panel: it floats over whatever the user is
 /// doing, joins every Space, and never steals keyboard focus.
-final class NudgePreviewPanelController: NSObject {
+final class NudgePreviewPanelController {
     private let settings: SettingsStoring
-    private let session = AVCaptureSession()
-    private let output = AVCaptureVideoDataOutput()
-    private let queue = DispatchQueue(label: "com.miskoune.posture.nudge-preview")
-    private let reader = PoseReader()
+    private let feed = CameraFeed(
+        preset: .medium,
+        queueLabel: "com.miskoune.posture.nudge-preview"
+    )
 
     private let panelSize = NSSize(width: 240, height: 170)
     private let screenMargin: CGFloat = 16
@@ -27,14 +26,11 @@ final class NudgePreviewPanelController: NSObject {
     private var panel: NSPanel?
     private var previewView: PreviewView?
 
-    private var isConfigured = false
-    /// Vision runs on the capture queue; frames that arrive while it is busy
-    /// are dropped rather than queued. Touched only on `queue`.
-    private var lastDetectionTime: CFTimeInterval = 0
-    private let detectionInterval: CFTimeInterval = 0.2
-
     init(settings: SettingsStoring) {
         self.settings = settings
+        feed.onDetection = { [weak self] detection in
+            self?.render(detection)
+        }
     }
 
     func show() {
@@ -44,21 +40,17 @@ final class NudgePreviewPanelController: NSObject {
 
         position(panel)
         panel.orderFrontRegardless()
-        queue.async { [weak self] in
-            guard let self, self.configure() else { return }
-            if !self.session.isRunning {
-                self.session.startRunning()
-            }
+        if let previewView {
+            // A camera that cannot be opened simply leaves the panel black —
+            // the notification already said what matters.
+            feed.start(mirroring: previewView)
         }
     }
 
     func hide() {
         guard let panel, panel.isVisible else { return }
         panel.orderOut(nil)
-        queue.async { [weak self] in
-            guard let self, self.session.isRunning else { return }
-            self.session.stopRunning()
-        }
+        feed.stop()
     }
 
     // MARK: - The panel
@@ -78,7 +70,7 @@ final class NudgePreviewPanelController: NSObject {
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.isMovableByWindowBackground = true
 
-        let preview = PreviewView(session: session)
+        let preview = PreviewView(session: feed.session)
         preview.layer?.cornerRadius = 12
         preview.layer?.masksToBounds = true
         preview.layer?.borderWidth = 2.5
@@ -99,40 +91,7 @@ final class NudgePreviewPanelController: NSObject {
         ))
     }
 
-    // MARK: - Capture
-
-    /// Runs on `queue`. Returns whether the session is usable; a camera that
-    /// cannot be opened simply leaves the panel black — the notification
-    /// already said what matters.
-    private func configure() -> Bool {
-        guard !isConfigured else { return true }
-
-        session.beginConfiguration()
-        defer { session.commitConfiguration() }
-
-        session.sessionPreset = .medium
-
-        guard let device = AVCaptureDevice.default(for: .video),
-              let input = try? AVCaptureDeviceInput(device: device),
-              session.canAddInput(input) else { return false }
-        session.addInput(input)
-
-        output.alwaysDiscardsLateVideoFrames = true
-        output.setSampleBufferDelegate(self, queue: queue)
-        guard session.canAddOutput(output) else { return false }
-        session.addOutput(output)
-
-        // A mirror is what people expect to see of themselves.
-        DispatchQueue.main.async { [weak self] in
-            guard let connection = self?.previewView?.previewLayer.connection,
-                  connection.isVideoMirroringSupported else { return }
-            connection.automaticallyAdjustsVideoMirroring = false
-            connection.isVideoMirrored = true
-        }
-
-        isConfigured = true
-        return true
-    }
+    // MARK: - Rendering
 
     private func render(_ detection: PoseDetection) {
         guard let previewView else { return }
@@ -154,26 +113,5 @@ final class NudgePreviewPanelController: NSObject {
             color: color
         )
         previewView.layer?.borderColor = color.cgColor
-    }
-}
-
-// MARK: - Frames
-
-extension NudgePreviewPanelController: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(
-        _ output: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from connection: AVCaptureConnection
-    ) {
-        let now = CACurrentMediaTime()
-        guard now - lastDetectionTime >= detectionInterval else { return }
-        lastDetectionTime = now
-
-        guard let buffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        let detection = reader.detect(buffer)
-
-        DispatchQueue.main.async { [weak self] in
-            self?.render(detection)
-        }
     }
 }

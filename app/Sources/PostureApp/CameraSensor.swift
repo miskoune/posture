@@ -96,26 +96,15 @@ final class CameraSensor: NSObject, PostureSensor, AVCaptureVideoDataOutputSampl
     private func configureIfNeeded() -> String? {
         guard !isConfigured else { return nil }
 
-        session.beginConfiguration()
-        defer { session.commitConfiguration() }
-
-        session.sessionPreset = .medium
-
-        guard let device = AVCaptureDevice.default(for: .video) else {
-            return "No camera found"
+        if let failure = CaptureSetup.configure(
+            session: session,
+            preset: .medium,
+            output: output,
+            delegate: self,
+            queue: queue
+        ) {
+            return failure
         }
-        guard let input = try? AVCaptureDeviceInput(device: device),
-              session.canAddInput(input) else {
-            return "Camera is in use by another app"
-        }
-        session.addInput(input)
-
-        output.alwaysDiscardsLateVideoFrames = true
-        output.setSampleBufferDelegate(self, queue: queue)
-        guard session.canAddOutput(output) else {
-            return "Cannot read from the camera"
-        }
-        session.addOutput(output)
 
         isConfigured = true
         return nil

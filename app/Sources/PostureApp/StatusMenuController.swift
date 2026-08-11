@@ -7,24 +7,14 @@ import PostureCore
 /// Presentation only: it renders a `PostureState` and reports what the user
 /// clicked. Every decision belongs to `PostureMonitor`.
 final class StatusMenuController {
-    /// What the user asked for. The delegate decides what it means.
-    enum Command {
-        case calibrate
-        case showDashboard
-        case togglePause
-        case setTolerance(Double)
-        case setPatience(Double)
-        case setNudgeRepeat(Double)
-        case togglePreviewOnNudge
-    }
-
     private let statusItem = NSStatusBar.system.statusItem(
         withLength: NSStatusItem.variableLength
     )
     private let stateItem = NSMenuItem(title: "Starting…", action: nil, keyEquivalent: "")
     private let pauseItem = NSMenuItem(title: "Pause", action: nil, keyEquivalent: "")
 
-    var onCommand: ((Command) -> Void)?
+    /// What the user asked for. The delegate decides what it means.
+    var onCommand: ((AppCommand) -> Void)?
 
     init() {
         buildMenu()
