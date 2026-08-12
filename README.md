@@ -71,29 +71,6 @@ app/Sources/
 the core and implemented on the outside, so the rules can be tested against a
 fake camera and a fake clock, which is what `app/Tests` does.
 
-## Building it
-
-Needs a Mac with Xcode 15 or later.
-
-```sh
-cd app
-./build.sh --run    # test, build, bundle, sign, launch
-swift test          # just the rules, no camera required
-```
-
-Look for the square icon in the menu bar. First launch asks for camera and
-notification permission; then open the menu and press **Calibrate** while
-sitting the way you actually want to sit.
-
-`app/release.sh` builds the distributable DMG (Developer ID signature,
-notarization, stapling); CI runs the same script on every `(app)`-scoped
-commit pushed to `main`.
-
-## Not built yet
-
-- Pausing during screen sharing and calls
-- Anything for an external webcam beyond what macOS exposes by default
-
 ## The repository
 
 ```

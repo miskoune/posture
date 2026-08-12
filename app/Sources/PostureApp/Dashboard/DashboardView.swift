@@ -287,7 +287,7 @@ struct SettingsPage: View {
                     .labelsHidden()
                 } label: {
                     Text("Show preview when notified")
-                    Text("A nudge also brings up a small camera preview in the corner of your screen.")
+                    Text("A notification also brings up a small camera preview in the corner of your screen.")
                 }
             }
 
