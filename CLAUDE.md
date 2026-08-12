@@ -35,3 +35,7 @@ site. In particular, keep these properties of the codebase true:
   notifications, FAQ answers, release notes, meta tags. They read as
   AI-generated. Use a period, comma, or colon instead. Code comments are
   exempt.
+- Call it a "notification", never a "nudge", in user-facing copy: app
+  strings, site text, README, release notes. Code identifiers and comments
+  (NudgeDelivering, nudgeRepeat, NotificationNudger) keep the internal
+  vocabulary.

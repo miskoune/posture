@@ -1,8 +1,8 @@
 # Posture
 
 A small macOS menu bar app that notices when you slouch and gives you one
-quiet nudge. Everything runs on your Mac: no video leaves the device, no
-account, no cloud.
+quiet notification. Everything runs on your Mac: no video leaves the device,
+no account, no cloud.
 
 **[Download the latest release](https://github.com/miskoune/posture/releases/latest/download/Posture.dmg)**
 (signed and notarized, macOS 14+, Apple silicon) · site at
@@ -17,7 +17,7 @@ account, no cloud.
    from the camera, asks Apple's Vision framework for body landmarks, and
    compares them to your baseline. The frame is discarded on the spot; only
    the numbers survive.
-3. **One nudge.** Drift past your tolerance for long enough and you get a
+3. **One notification.** Drift past your tolerance for long enough and you get a
    single notification, replaced rather than stacked if you stay folded over,
    and withdrawn the moment you sit back.
 
@@ -45,7 +45,7 @@ The Swift package has two layers with a hard boundary between them:
   slouching" can be tested in microseconds with a fake camera and a fake
   clock.
 - **`PostureApp`** is the macOS shell: AVFoundation for the camera, Vision
-  for the landmarks, UserNotifications for the nudge, AppKit and SwiftUI for
+  for the landmarks, UserNotifications for the notification, AppKit and SwiftUI for
   the menu bar and the dashboard. It implements the small set of protocols
   the core declares, and `main.swift` is the one place that wires the two
   together.

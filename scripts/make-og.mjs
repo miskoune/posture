@@ -56,7 +56,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" 
           letter-spacing="-3.5" fill="${SAGE}">right now.</text>
 
     <text x="80" y="470" font-size="30" font-weight="450" fill="${MUTED}">A Mac app that tells you when your posture goes bad.</text>
-    <text x="80" y="556" font-size="26" font-weight="500" fill="${MUTED}">0 bytes uploaded · 0 accounts · 1 nudge</text>
+    <text x="80" y="556" font-size="26" font-weight="500" fill="${MUTED}">0 bytes uploaded · 0 accounts · 1 notification</text>
   </g>
 
   <!-- before / after, in the two colours the app itself uses -->
