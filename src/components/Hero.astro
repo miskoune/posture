@@ -2,6 +2,7 @@
 import DashboardWindow from './DashboardWindow.astro';
 import DownloadIcon from './DownloadIcon.astro';
 import { site } from '../config/site';
+import { ANALYTICS_EVENTS } from '../utils/event-names';
 
 /**
  * Rule 20 — the page has to sell from here alone, because most visitors never
@@ -30,6 +31,8 @@ import { site } from '../config/site';
         class="inline-flex items-center gap-2.5 rounded-xl bg-ink px-6 py-3.5 text-[1rem] font-semibold text-paper no-underline shadow-float transition-transform hover:-translate-y-0.5 active:translate-y-0"
         href={site.downloadUrl}
         rel="noopener"
+        data-analytics={ANALYTICS_EVENTS.downloadClicked}
+        data-analytics-location="hero"
       >
         <DownloadIcon class="h-[18px] w-[18px]" />
         {site.ctaLabel}

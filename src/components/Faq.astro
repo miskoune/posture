@@ -1,5 +1,6 @@
 ---
 import { faqs } from '../data/faq';
+import { ANALYTICS_EVENTS } from '../utils/event-names';
 ---
 
 <section class="ps-screen" id="ps-faq">
@@ -19,7 +20,11 @@ import { faqs } from '../data/faq';
             name="ps-faq"
             open={i === 0}
           >
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-[1.02rem] font-medium">
+            <summary
+              class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-[1.02rem] font-medium"
+              data-analytics={ANALYTICS_EVENTS.faqOpened}
+              data-analytics-question={faq.q}
+            >
               {faq.q}
               <svg
                 class="h-[18px] w-[18px] shrink-0 stroke-muted transition-transform duration-200 group-open:rotate-180"

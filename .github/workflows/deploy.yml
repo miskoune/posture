@@ -47,8 +47,12 @@ jobs:
       - name: Typecheck .ts (native TS 7)
         run: npm run typecheck
 
+      # The PostHog key is inlined into the static bundle at build time; the
+      # site ships without analytics when the secret is absent.
       - name: Build the project
         run: npm run build
+        env:
+          PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
 
       - name: SSH auth
         run: |

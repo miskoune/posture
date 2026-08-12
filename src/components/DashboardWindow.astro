@@ -1,6 +1,7 @@
 ---
 import AppIcon from './AppIcon.astro';
 import CameraView from './CameraView.astro';
+import { ANALYTICS_EVENTS } from '../utils/event-names';
 
 /**
  * The dashboard window, redrawn in the page's own tokens: sidebar with the
@@ -35,13 +36,24 @@ const goodShare = 86;
     name="ps-dash-page"
     id="ps-dash-camera"
     checked
+    data-analytics={ANALYTICS_EVENTS.demoPageSelected}
+    data-analytics-page="camera"
   />
-  <input class="ps-pick" type="radio" name="ps-dash-page" id="ps-dash-stats" />
+  <input
+    class="ps-pick"
+    type="radio"
+    name="ps-dash-page"
+    id="ps-dash-stats"
+    data-analytics={ANALYTICS_EVENTS.demoPageSelected}
+    data-analytics-page="stats"
+  />
   <input
     class="ps-pick"
     type="radio"
     name="ps-dash-page"
     id="ps-dash-settings"
+    data-analytics={ANALYTICS_EVENTS.demoPageSelected}
+    data-analytics-page="settings"
   />
 
   <div class="ps-window">

@@ -85,5 +85,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       href="#ps-main">Skip to content</a
     >
     <slot />
+
+    <script>
+      import { initTracking } from '../utils/init-tracking';
+      initTracking();
+    </script>
   </body>
 </html>
