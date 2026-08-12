@@ -50,8 +50,26 @@ The Swift package has two layers with a hard boundary between them:
   the core declares, and `main.swift` is the one place that wires the two
   together.
 
-The full tour, including the decisions worth arguing about, is in
-[`app/README.md`](app/README.md).
+```
+app/Sources/
+  PostureCore/     imports Foundation only, compiles and tests anywhere
+    Reading        one measurement: two ratios, never an image
+    Baseline       the calibrated pose, and how far a reading has drifted
+    Calibration    a run in progress, averaging away the unlucky frame
+    SlouchTracker  when a slouch has lasted long enough to deserve the banner
+    PostureMonitor the use case: look, judge, occasionally speak
+    Ports          PostureSensor, NudgeDelivering, SettingsStoring, Clock
+  PostureApp/      every macOS framework lives here and nowhere else
+    PoseReader     Vision, the only file that knows what a pixel is
+    CameraSensor   AVFoundation
+    NotificationNudger, UserDefaultsSettings, StatusMenuController
+    Dashboard/     the SwiftUI window: camera, stats, settings
+    main.swift     the composition root
+```
+
+`PostureCore` names nothing from `PostureApp`. The protocols are declared by
+the core and implemented on the outside, so the rules can be tested against a
+fake camera and a fake clock, which is what `app/Tests` does.
 
 ## Building it
 
@@ -62,6 +80,19 @@ cd app
 ./build.sh --run    # test, build, bundle, sign, launch
 swift test          # just the rules, no camera required
 ```
+
+Look for the square icon in the menu bar. First launch asks for camera and
+notification permission; then open the menu and press **Calibrate** while
+sitting the way you actually want to sit.
+
+`app/release.sh` builds the distributable DMG (Developer ID signature,
+notarization, stapling); CI runs the same script on every `(app)`-scoped
+commit pushed to `main`.
+
+## Not built yet
+
+- Pausing during screen sharing and calls
+- Anything for an external webcam beyond what macOS exposes by default
 
 ## The repository
 
