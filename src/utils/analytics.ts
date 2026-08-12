@@ -1,5 +1,7 @@
 import type { PostHog } from 'posthog-js';
 
+import { site } from '../config/site';
+
 /**
  * PostHog, loaded lazily so the landing page ships no analytics bytes until
  * the first interaction settles. Same shape as storescreenshot's analytics:
@@ -15,6 +17,13 @@ const POSTHOG_KEY: string | undefined = import.meta.env['PUBLIC_POSTHOG_KEY'];
 const POSTHOG_HOST: string =
   import.meta.env['PUBLIC_POSTHOG_HOST'] ?? 'https://eu.i.posthog.com';
 
+/** Only the deployed site captures. A production build served on localhost
+ *  (or any other host) stays silent, so local browsing never pollutes the
+ *  data. */
+function isProductionHost() {
+  return window.location.hostname === new URL(site.url).hostname;
+}
+
 let posthogPromise: Promise<PostHog | null> | null = null;
 let initialized = false;
 
@@ -28,6 +37,9 @@ function getPosthog() {
 
 export function initAnalytics() {
   if (import.meta.env.DEV || !POSTHOG_KEY || initialized) {
+    return;
+  }
+  if (!isProductionHost()) {
     return;
   }
 
