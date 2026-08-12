@@ -3,15 +3,8 @@ import { site } from '../config/site';
 import AppIcon from './AppIcon.astro';
 import DownloadIcon from './DownloadIcon.astro';
 
-/**
- * Rule 16 — visitors look for the price early and use it to understand the
- * product, so "Price" keeps its slot in the header. The answer behind the link
- * happens to be zero.
- */
-
 const links = [
-  { href: '#ps-how', label: 'How it works' },
-  { href: '#ps-price', label: 'Price' },
+  { href: '#ps-app', label: 'Inside the app' },
   { href: '#ps-faq', label: 'FAQ' },
   { href: site.repo, label: 'GitHub' },
 ] as const;

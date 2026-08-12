@@ -1,0 +1,980 @@
+---
+import AppIcon from './AppIcon.astro';
+import CameraView from './CameraView.astro';
+
+/**
+ * The dashboard window, redrawn in the page's own tokens: sidebar with the
+ * three pages, toolbar with Pause and Calibrate, and the selected page on the
+ * right. Every string and layout decision is lifted from the Swift:
+ * `DashboardView` for the shell and the three pages, `DashboardModel` for the
+ * page names and symbols, `DashboardWindowController.judge` for the verdict
+ * lines, `SettingsOptions` and `UserDefaultsSettings` for the choices shown
+ * selected. Copied verbatim: if a string here stops matching the Swift, one
+ * of the two is wrong and it is worth knowing which.
+ *
+ * The sidebar really navigates. Three hidden radios carry the selection so
+ * the whole demo is CSS: no JavaScript, works with the keyboard, and the
+ * panes sit stacked in one grid cell so the window never changes height when
+ * the page does.
+ *
+ * The Camera page plays the product's loop on a shared 9s timeline (see
+ * CameraView.astro): drift, get caught, one banner, sit back.
+ *
+ * The version line under the app name in the real sidebar is left out: it
+ * changes every release and a stale number would be worse than none.
+ */
+
+/** 4h 12m against 41m is 252 of 293 minutes: 86%. */
+const goodShare = 86;
+---
+
+<div class="ps-demo">
+  <input
+    class="ps-pick"
+    type="radio"
+    name="ps-dash-page"
+    id="ps-dash-camera"
+    checked
+  />
+  <input class="ps-pick" type="radio" name="ps-dash-page" id="ps-dash-stats" />
+  <input
+    class="ps-pick"
+    type="radio"
+    name="ps-dash-page"
+    id="ps-dash-settings"
+  />
+
+  <div class="ps-window">
+    <aside class="ps-sidebar">
+      <span class="ps-lights" aria-hidden="true"><i></i><i></i><i></i></span>
+
+      <span class="ps-app">
+        <AppIcon class="h-[26px] w-[26px] shrink-0 rounded-[6px]" uid="dash" />
+        <span class="ps-app-name">Posture</span>
+      </span>
+
+      <label class="ps-row" for="ps-dash-camera">
+        <svg
+          viewBox="0 0 20 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="1.2" y="3" width="11.6" height="10" rx="2.6"></rect>
+          <path d="M12.8 8.6v-1.2l5.4-3v7.2z"></path>
+        </svg>
+        <span>Camera</span>
+      </label>
+
+      <label class="ps-row" for="ps-dash-stats">
+        <svg
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M3.2 13.5V9.8M8 13.5V4.5M12.8 13.5V7.4"></path>
+        </svg>
+        <span>Stats</span>
+      </label>
+
+      <label class="ps-row" for="ps-dash-settings">
+        <svg
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="8" cy="8" r="3"></circle>
+          <path
+            d="M8 1.6v2M8 12.4v2M1.6 8h2M12.4 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M12.5 3.5l-1.4 1.4M4.9 11.1l-1.4 1.4"
+          ></path>
+        </svg>
+        <span>Settings</span>
+      </label>
+    </aside>
+
+    <section class="ps-detail">
+      <header class="ps-toolbar">
+        <svg
+          class="ps-tool"
+          viewBox="0 0 18 14"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <rect x="1" y="1" width="16" height="12" rx="2.6"></rect>
+          <path d="M6.6 1v12"></path>
+        </svg>
+
+        <span class="ps-titles" aria-hidden="true">
+          <strong class="ps-title ps-title-camera">Camera</strong>
+          <strong class="ps-title ps-title-stats">Stats</strong>
+          <strong class="ps-title ps-title-settings">Settings</strong>
+        </span>
+
+        <span class="ps-tools" aria-hidden="true">
+          <svg class="ps-tool" viewBox="0 0 14 14" fill="currentColor">
+            <rect x="3" y="2" width="2.8" height="10" rx="1.2"></rect>
+            <rect x="8.2" y="2" width="2.8" height="10" rx="1.2"></rect>
+          </svg>
+          <svg
+            class="ps-tool"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <circle cx="8" cy="8" r="5.1"></circle>
+            <path d="M8 0.9v3M8 12.1v3M0.9 8h3M12.1 8h3"></path>
+            <circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"
+            ></circle>
+          </svg>
+        </span>
+      </header>
+
+      <div class="ps-panes">
+        <!-- Camera -->
+        <div class="ps-pane ps-pane-camera">
+          <div class="ps-camcard">
+            <CameraView animated />
+
+            <!-- Both verdicts stacked, crossfaded on the shared 9s timeline.
+                 The app paints the bad dot orange; this page has three
+                 colours and no fourth hue, so bad carries ink instead. -->
+            <div class="ps-status" aria-hidden="true">
+              <div class="ps-vcard ps-vcard-good">
+                <p class="ps-vtitle"><i class="ps-dot"></i>Good posture</p>
+                <p class="ps-vdetail">
+                  slump +3% &nbsp; lean -1% &nbsp; tilt +2% &nbsp; tolerance 15%
+                </p>
+              </div>
+              <div class="ps-vcard ps-vcard-bad">
+                <p class="ps-vtitle">
+                  <i class="ps-dot is-bad"></i>Bad posture: sit back
+                </p>
+                <p class="ps-vdetail">
+                  slump +6% &nbsp; lean +21% &nbsp; tilt +3% &nbsp; tolerance
+                  15%
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="ps-pane ps-pane-stats">
+          <div class="ps-statgrid">
+            <div class="ps-statcard">
+              <span class="ps-statlabel is-good">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm3.6 5.2-4.1 4.6a.9.9 0 0 1-1.3.05L4.3 9a.9.9 0 1 1 1.2-1.3l1.2 1.2 3.5-3.9a.9.9 0 0 1 1.4 1.2z"
+                  ></path>
+                </svg>
+                Good posture
+              </span>
+              <span class="ps-statvalue">4h 12m</span>
+            </div>
+            <div class="ps-statcard">
+              <span class="ps-statlabel is-bad">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm2.8 8.5a.9.9 0 1 1-1.3 1.3L8 9.3l-1.5 1.5a.9.9 0 1 1-1.3-1.3L6.7 8 5.2 6.5a.9.9 0 0 1 1.3-1.3L8 6.7l1.5-1.5a.9.9 0 0 1 1.3 1.3L9.3 8z"
+                  ></path>
+                </svg>
+                Bad posture
+              </span>
+              <span class="ps-statvalue">41m</span>
+            </div>
+          </div>
+
+          <div class="ps-splitcard">
+            <span class="ps-splithead">Session split</span>
+            <span class="ps-splitbar" aria-hidden="true">
+              <i class="is-good" style={`width: ${goodShare}%`}></i>
+              <i class="is-rest"></i>
+            </span>
+            <span class="ps-splitnote">
+              {goodShare}% of this session sitting well
+            </span>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="ps-pane ps-pane-settings">
+          <section class="ps-form-sec">
+            <h3 class="ps-form-head">Detection</h3>
+            <div class="ps-form-card">
+              <div class="ps-form-row">
+                <span class="ps-form-text">
+                  <span class="ps-form-title">Sensitivity</span>
+                  <span class="ps-form-desc">
+                    How far you can drift from your calibrated posture before it
+                    counts as a slouch.
+                  </span>
+                </span>
+                <span class="ps-popup">
+                  Normal
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M8 10l4-4 4 4M8 14l4 4 4-4"></path>
+                  </svg>
+                </span>
+              </div>
+              <div class="ps-form-row">
+                <span class="ps-form-text">
+                  <span class="ps-form-title">Calibration</span>
+                  <span class="ps-form-desc">
+                    Sit the way you want to sit, then recalibrate.
+                  </span>
+                </span>
+                <span class="ps-popup">Recalibrate</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="ps-form-sec">
+            <h3 class="ps-form-head">Notifications</h3>
+            <div class="ps-form-card">
+              <div class="ps-form-row">
+                <span class="ps-form-text">
+                  <span class="ps-form-title">Wait before notifying</span>
+                  <span class="ps-form-desc">
+                    How long bad posture must last before Posture says anything.
+                  </span>
+                </span>
+                <span class="ps-popup">
+                  1 minute
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M8 10l4-4 4 4M8 14l4 4 4-4"></path>
+                  </svg>
+                </span>
+              </div>
+              <div class="ps-form-row">
+                <span class="ps-form-text">
+                  <span class="ps-form-title">Remind again while bad</span>
+                  <span class="ps-form-desc">
+                    How often to repeat the reminder while the slouch continues.
+                  </span>
+                </span>
+                <span class="ps-popup">
+                  Every 5 minutes
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M8 10l4-4 4 4M8 14l4 4 4-4"></path>
+                  </svg>
+                </span>
+              </div>
+              <div class="ps-form-row">
+                <span class="ps-form-text">
+                  <span class="ps-form-title">Show preview when notified</span>
+                  <span class="ps-form-desc">
+                    A nudge also brings up a small camera preview in the corner
+                    of your screen.
+                  </span>
+                </span>
+                <span class="ps-switch" aria-hidden="true"><i></i></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="ps-form-sec">
+            <h3 class="ps-form-head">Monitoring</h3>
+            <div class="ps-form-card">
+              <div class="ps-form-row">
+                <span class="ps-form-text">
+                  <span class="ps-form-title">Watch my posture</span>
+                  <span class="ps-form-desc">
+                    Turn off to pause monitoring and notifications.
+                  </span>
+                </span>
+                <span class="ps-switch" aria-hidden="true"><i></i></span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- The nudge, timed to the moment the Camera page's loop gets caught. It
+       overhangs the window edge because notifications belong to the screen,
+       not the window. -->
+  <div class="ps-toast" aria-hidden="true">
+    <AppIcon
+      class="h-[1.9rem] w-[1.9rem] shrink-0 rounded-[7px]"
+      uid="dtoast"
+    />
+    <div class="ps-toast-body">
+      <p class="ps-toast-head"><span>Posture</span><span>now</span></p>
+      <p class="ps-toast-text">Bad posture for a minute. Sit back.</p>
+    </div>
+  </div>
+
+  <p class="ps-note ps-note-camera">
+    The Camera page. The box is what it measured this frame; the dashed line is
+    the height you calibrated. Drift past your tolerance and the verdict names
+    the fix, then one banner follows.
+  </p>
+  <p class="ps-note ps-note-stats">
+    The Stats page. This session's split and nothing more. Nothing is written to
+    disk, so there is no history to leak.
+  </p>
+  <p class="ps-note ps-note-settings">
+    The Settings page. How far is too far, how long before it speaks, how often
+    it repeats. The same choices sit in the menu bar.
+  </p>
+</div>
+
+<style>
+  .ps-demo {
+    position: relative;
+    width: 100%;
+    max-width: 56rem;
+    margin-inline: auto;
+    text-align: left;
+  }
+
+  /* Hidden but focusable, so the sidebar works from the keyboard. Anchored
+   * over the window rather than left at the demo's top edge: clicking a
+   * label focuses its radio, the browser scrolls the focused element into
+   * view, and an off-screen radio would yank the page away from the demo. */
+  .ps-pick {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ------------------------------------------------------------ the window */
+
+  .ps-window {
+    display: grid;
+    grid-template-columns: 12.5rem 1fr;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 0.8rem;
+    background: var(--raised);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ----------------------------------------------------------- the sidebar */
+
+  .ps-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.8rem 0.6rem;
+    border-right: 1px solid var(--line);
+    background: var(--sunk);
+  }
+
+  .ps-lights {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0.1rem 0.3rem 0.7rem;
+  }
+
+  .ps-lights i {
+    width: 0.66rem;
+    height: 0.66rem;
+    border-radius: 50%;
+    background: var(--line-strong);
+  }
+
+  .ps-app {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.3rem 0.4rem 0.7rem;
+  }
+
+  .ps-app-name {
+    font-size: 0.82rem;
+    font-weight: 620;
+  }
+
+  .ps-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.34rem 0.55rem;
+    border-radius: 7px;
+    font-size: 0.78rem;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .ps-row svg {
+    width: 0.95rem;
+    height: 0.85rem;
+    flex: 0 0 auto;
+    color: var(--muted);
+  }
+
+  #ps-dash-camera:checked ~ .ps-window label[for='ps-dash-camera'],
+  #ps-dash-stats:checked ~ .ps-window label[for='ps-dash-stats'],
+  #ps-dash-settings:checked ~ .ps-window label[for='ps-dash-settings'] {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  #ps-dash-camera:checked ~ .ps-window label[for='ps-dash-camera'] svg,
+  #ps-dash-stats:checked ~ .ps-window label[for='ps-dash-stats'] svg,
+  #ps-dash-settings:checked ~ .ps-window label[for='ps-dash-settings'] svg {
+    color: var(--accent-ink);
+  }
+
+  #ps-dash-camera:focus-visible ~ .ps-window label[for='ps-dash-camera'],
+  #ps-dash-stats:focus-visible ~ .ps-window label[for='ps-dash-stats'],
+  #ps-dash-settings:focus-visible ~ .ps-window label[for='ps-dash-settings'] {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ----------------------------------------------------------- the toolbar */
+
+  .ps-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    height: 2.6rem;
+    padding-inline: 0.85rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .ps-titles {
+    display: grid;
+  }
+
+  .ps-title {
+    grid-area: 1 / 1;
+    font-size: 0.84rem;
+    font-weight: 620;
+    color: var(--ink);
+    opacity: 0;
+  }
+
+  #ps-dash-camera:checked ~ .ps-window .ps-title-camera,
+  #ps-dash-stats:checked ~ .ps-window .ps-title-stats,
+  #ps-dash-settings:checked ~ .ps-window .ps-title-settings {
+    opacity: 1;
+  }
+
+  .ps-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-left: auto;
+  }
+
+  .ps-tool {
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+  }
+
+  /* ------------------------------------------------------------- the panes */
+
+  /* All three stacked in one cell: the tallest (Settings) sets the height,
+   * so switching pages never moves the page around the window. */
+  .ps-panes {
+    display: grid;
+  }
+
+  .ps-pane {
+    grid-area: 1 / 1;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  #ps-dash-camera:checked ~ .ps-window .ps-pane-camera,
+  #ps-dash-stats:checked ~ .ps-window .ps-pane-stats,
+  #ps-dash-settings:checked ~ .ps-window .ps-pane-settings {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  /* -------------------------------------------------------------- camera */
+
+  .ps-pane-camera {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+
+  /* The 16:9 card from MonitorPage. `max-height` may cut it shorter than
+   * 16:9; CameraView crops rather than letterboxes, so that reads as a crop,
+   * the way a real preview would. */
+  .ps-camcard {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #0b0d0f;
+  }
+
+  .ps-status {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    translate: -50% 0;
+    display: grid;
+    justify-items: center;
+  }
+
+  .ps-vcard {
+    grid-area: 1 / 1;
+    align-self: end;
+    width: max-content;
+    max-width: 100%;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--raised) 88%, transparent);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .ps-vtitle {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 620;
+    white-space: nowrap;
+  }
+
+  .ps-dot {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .ps-dot.is-bad {
+    background: var(--ink);
+  }
+
+  .ps-vdetail {
+    margin-top: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    white-space: nowrap;
+    color: var(--muted);
+  }
+
+  /* Crossfade on the timeline shared with CameraView's drift: the verdict
+   * flips just after the box settles below the line, and back once it is
+   * home again. */
+  .ps-vcard-good {
+    animation: ps-dash-good 9s ease-in-out infinite;
+  }
+
+  .ps-vcard-bad {
+    opacity: 0;
+    animation: ps-dash-bad 9s ease-in-out infinite;
+  }
+
+  @keyframes ps-dash-good {
+    0%,
+    48% {
+      opacity: 1;
+    }
+    52%,
+    68% {
+      opacity: 0;
+    }
+    74%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes ps-dash-bad {
+    0%,
+    48% {
+      opacity: 0;
+    }
+    52%,
+    68% {
+      opacity: 1;
+    }
+    74%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* --------------------------------------------------------------- stats */
+
+  .ps-pane-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .ps-statgrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .ps-statcard,
+  .ps-splitcard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: var(--sunk);
+  }
+
+  .ps-statlabel {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.74rem;
+    font-weight: 560;
+  }
+
+  .ps-statlabel svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    flex: 0 0 auto;
+  }
+
+  .ps-statlabel.is-good {
+    color: var(--accent);
+  }
+
+  /* Orange in the app; ink here, the page's three colours have no room for a
+   * warning hue and the number carries the weight. */
+  .ps-statlabel.is-bad {
+    color: var(--muted);
+  }
+
+  .ps-statvalue {
+    font-size: 1.7rem;
+    font-weight: 620;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  .ps-splithead,
+  .ps-splitnote {
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+
+  .ps-splithead {
+    font-weight: 560;
+  }
+
+  .ps-splitbar {
+    display: flex;
+    gap: 2px;
+    height: 8px;
+  }
+
+  .ps-splitbar i {
+    border-radius: 999px;
+  }
+
+  .ps-splitbar .is-good {
+    background: var(--accent);
+  }
+
+  .ps-splitbar .is-rest {
+    flex: 1;
+    background: var(--line-strong);
+  }
+
+  /* ------------------------------------------------------------ settings */
+
+  .ps-pane-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .ps-form-head {
+    margin-bottom: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 620;
+    color: var(--muted);
+  }
+
+  .ps-form-card {
+    border-radius: 10px;
+    background: var(--sunk);
+  }
+
+  .ps-form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .ps-form-row + .ps-form-row {
+    border-top: 1px solid var(--line);
+  }
+
+  .ps-form-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .ps-form-title {
+    font-size: 0.78rem;
+    font-weight: 560;
+  }
+
+  .ps-form-desc {
+    font-size: 0.66rem;
+    color: var(--muted);
+  }
+
+  .ps-popup {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex: 0 0 auto;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--raised);
+    box-shadow: var(--shadow-sm);
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  .ps-popup svg {
+    width: 0.75rem;
+    height: 0.75rem;
+    color: var(--muted);
+  }
+
+  .ps-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    width: 1.75rem;
+    height: 1.05rem;
+    padding: 0.12rem;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  .ps-switch i {
+    width: 0.81rem;
+    height: 0.81rem;
+    border-radius: 50%;
+    background: var(--accent-ink);
+  }
+
+  /* ------------------------------------------------------------- the nudge */
+
+  .ps-toast {
+    position: absolute;
+    top: 2.2rem;
+    right: -0.9rem;
+    z-index: 1;
+    display: none;
+    gap: 0.65rem;
+    align-items: flex-start;
+    width: min(16rem, 82%);
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: color-mix(in oklab, var(--raised) 86%, transparent);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    animation: ps-dash-toast 9s ease-in-out infinite;
+  }
+
+  #ps-dash-camera:checked ~ .ps-toast {
+    display: flex;
+  }
+
+  .ps-toast-body {
+    min-width: 0;
+    line-height: 1.35;
+  }
+
+  .ps-toast-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.76rem;
+    font-weight: 620;
+  }
+
+  .ps-toast-head span:last-child {
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .ps-toast-text {
+    margin-top: 0.1rem;
+    font-size: 0.76rem;
+    color: var(--muted);
+  }
+
+  @keyframes ps-dash-toast {
+    0%,
+    54% {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.97);
+    }
+    58%,
+    68% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    74%,
+    100% {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.97);
+    }
+  }
+
+  /* ------------------------------------------------------------- the notes */
+
+  .ps-note {
+    display: none;
+    max-width: 52ch;
+    margin: 1.1rem auto 0;
+    font-size: 0.9rem;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  #ps-dash-camera:checked ~ .ps-note-camera,
+  #ps-dash-stats:checked ~ .ps-note-stats,
+  #ps-dash-settings:checked ~ .ps-note-settings {
+    display: block;
+  }
+
+  /* -------------------------------------------------------------- narrow */
+
+  /* Below this the sidebar collapses to an icon rail, the way the real one
+   * does behind its toolbar toggle. */
+  @media (max-width: 44rem) {
+    .ps-window {
+      grid-template-columns: 3.1rem 1fr;
+    }
+
+    .ps-sidebar {
+      align-items: center;
+      padding-inline: 0.35rem;
+    }
+
+    .ps-app-name,
+    .ps-row span {
+      display: none;
+    }
+
+    .ps-row {
+      padding: 0.4rem;
+    }
+
+    .ps-row svg {
+      width: 1.05rem;
+      height: 0.95rem;
+    }
+
+    .ps-lights {
+      padding-bottom: 0.5rem;
+    }
+
+    .ps-lights i {
+      width: 0.5rem;
+      height: 0.5rem;
+    }
+
+    .ps-toast {
+      top: 2rem;
+      right: 0.4rem;
+    }
+
+    .ps-vdetail {
+      display: none;
+    }
+
+    .ps-form-desc {
+      display: none;
+    }
+
+    .ps-statvalue {
+      font-size: 1.3rem;
+    }
+  }
+
+  /* One honest still frame when motion is unwelcome: sitting well, no toast.
+   * The global reduced-motion rule shortens durations but an infinite loop
+   * would still flicker, so these stop it outright. */
+  @media (prefers-reduced-motion: reduce) {
+    .ps-vcard-good,
+    .ps-vcard-bad,
+    .ps-toast {
+      animation: none;
+    }
+
+    #ps-dash-camera:checked ~ .ps-toast {
+      display: none;
+    }
+  }
+</style>

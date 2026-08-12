@@ -1,12 +1,14 @@
 ---
-import PostureFigure from './PostureFigure.astro';
+import DashboardWindow from './DashboardWindow.astro';
 import DownloadIcon from './DownloadIcon.astro';
 import { site } from '../config/site';
 
 /**
  * Rule 20 — the page has to sell from here alone, because most visitors never
- * reach the second screen. Rule 10 — the demo sits beside the headline, so the
- * product is shown before a word explains it. Rule 22 — exactly one button.
+ * reach the second screen. Rule 10 — the product is shown before a word
+ * explains it: the app's own window sits under the headline, playing the
+ * loop (drift, get caught, one banner, sit back) and navigable page by page.
+ * Rule 22 — exactly one button.
  */
 ---
 
@@ -14,39 +16,31 @@ import { site } from '../config/site';
   class="relative overflow-clip pt-12 pb-16 sm:pt-16 sm:pb-24"
   id="ps-main"
 >
-  <div
-    class="ps-shell grid items-center gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-16"
-  >
-    <div class="order-2 lg:order-1">
-      <h1 class="text-[clamp(2.7rem,7vw,4.4rem)] tracking-[-0.04em]">
-        {site.headline}
-      </h1>
+  <div class="ps-shell flex flex-col items-center text-center">
+    <h1 class="max-w-[16ch] text-[clamp(2.7rem,7vw,4.4rem)] tracking-[-0.04em]">
+      {site.headline}
+    </h1>
 
-      <p
-        class="mt-6 max-w-[46ch] text-[clamp(1.06rem,1.9vw,1.22rem)] text-muted"
+    <p class="mt-6 max-w-[52ch] text-[clamp(1.06rem,1.9vw,1.22rem)] text-muted">
+      {site.subhead}
+    </p>
+
+    <div class="mt-9 flex flex-col items-center">
+      <a
+        class="inline-flex items-center gap-2.5 rounded-xl bg-ink px-6 py-3.5 text-[1rem] font-semibold text-paper no-underline shadow-float transition-transform hover:-translate-y-0.5 active:translate-y-0"
+        href={site.downloadUrl}
+        rel="noopener"
       >
-        {site.subhead}
-      </p>
-
-      <div class="mt-9">
-        <a
-          class="inline-flex items-center gap-2.5 rounded-xl bg-ink px-6 py-3.5 text-[1rem] font-semibold text-paper no-underline shadow-float transition-transform hover:-translate-y-0.5 active:translate-y-0"
-          href={site.downloadUrl}
-          rel="noopener"
-        >
-          <DownloadIcon class="h-[18px] w-[18px]" />
-          {site.ctaLabel}
-        </a>
-        <p class="mt-3 max-w-[34ch] text-[0.85rem] text-muted">
-          {site.ctaNote}
-        </p>
-      </div>
-
-      <p class="mt-7 text-[0.83rem] text-muted">
+        <DownloadIcon class="h-[18px] w-[18px]" />
+        {site.ctaLabel}
+      </a>
+      <p class="mt-3 text-[0.83rem] text-muted">
         {site.requirements} · MIT licence
       </p>
     </div>
 
-    <div class="order-1 lg:order-2"><PostureFigure /></div>
+    <div class="mt-16 w-full sm:mt-20">
+      <DashboardWindow />
+    </div>
   </div>
 </section>

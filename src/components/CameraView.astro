@@ -10,10 +10,21 @@
  *
  * It fills whatever box it is given, so the caller owns the shape: wrap it in
  * an element with a height, from an aspect-ratio or from grid stretch.
+ *
+ * With `animated`, the figure leans in and the face box follows it below the
+ * calibrated line, then recovers. The timeline is shared with the verdict
+ * card and the banner in DashboardWindow.astro: 0-40% good, 40-50% the slow
+ * drift, 50-64% caught, 64-72% sitting back, 72-100% good. Change one side
+ * and the other stops telling the same story.
  */
+interface Props {
+  readonly animated?: boolean | undefined;
+}
+
+const { animated = false } = Astro.props;
 ---
 
-<div class="ps-cam">
+<div class="ps-cam" class:list={[animated && 'is-live']}>
   <svg
     class="ps-cam-svg"
     viewBox="0 0 320 240"
@@ -24,11 +35,14 @@
     <rect width="320" height="240" fill="#0b0d0f"></rect>
     <ellipse cx="160" cy="150" rx="150" ry="120" fill="#14181c"></ellipse>
 
-    <path
-      d="M48 240 C62 176 114 154 160 154 C206 154 258 176 272 240 Z"
-      fill="#262c32"></path>
-    <rect x="146" y="128" width="28" height="32" rx="10" fill="#2f363d"></rect>
-    <ellipse cx="160" cy="104" rx="34" ry="42" fill="#333b43"></ellipse>
+    <g class="ps-cam-body">
+      <path
+        d="M48 240 C62 176 114 154 160 154 C206 154 258 176 272 240 Z"
+        fill="#262c32"></path>
+      <rect x="146" y="128" width="28" height="32" rx="10" fill="#2f363d"
+      ></rect>
+      <ellipse cx="160" cy="104" rx="34" ry="42" fill="#333b43"></ellipse>
+    </g>
 
     <!-- the calibrated head height, dashed white at 60% like guideLayer -->
     <path
@@ -40,6 +54,7 @@
 
     <!-- the measured face box: 3pt, corner radius min(12, width / 4) -->
     <rect
+      class="ps-cam-box"
       x="124"
       y="60"
       width="72"
@@ -70,5 +85,38 @@
     inset: 0;
     width: 100%;
     height: 100%;
+  }
+
+  /* One transform for body and box: Vision's box tracks the face exactly, so
+   * the two may never drift apart in the mock either. */
+  .is-live .ps-cam-body,
+  .is-live .ps-cam-box {
+    transform-box: view-box;
+    animation: ps-cam-drift 9s ease-in-out infinite;
+  }
+
+  /* The lean-in is slow (the product's whole point is that the slide is too
+   * slow to feel); sitting back after the nudge is quick. */
+  @keyframes ps-cam-drift {
+    0%,
+    40% {
+      transform: translate(0, 0);
+    }
+    50%,
+    64% {
+      transform: translate(7px, 28px);
+    }
+    72%,
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+
+  /* One honest still frame when motion is unwelcome. */
+  @media (prefers-reduced-motion: reduce) {
+    .is-live .ps-cam-body,
+    .is-live .ps-cam-box {
+      animation: none;
+    }
   }
 </style>
