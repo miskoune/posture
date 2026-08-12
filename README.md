@@ -1,103 +1,74 @@
 # Posture
 
-A small macOS menu bar app that notices when you slouch and gives you one quiet
-nudge. Everything runs on-device — no video leaves the Mac, no account, no cloud.
+A small macOS menu bar app that notices when you slouch and gives you one
+quiet nudge. Everything runs on your Mac: no video leaves the device, no
+account, no cloud.
 
 **[Download the latest release](https://github.com/miskoune/posture/releases/latest/download/Posture.dmg)**
-(signed and notarized DMG, macOS 14+, Apple silicon) · site at
+(signed and notarized, macOS 14+, Apple silicon) · site at
 [posture.miskoune.com](https://posture.miskoune.com)
 
-This repository holds both halves:
+## How it works
 
-```
-app/   the Swift menu bar app (Swift Package, no Xcode project)
-src/   the Astro marketing site
-```
+1. **Calibrate once.** Sit the way you actually want to sit and press
+   Calibrate. Posture remembers that pose as a handful of numbers: the angle
+   of your neck, the height of your shoulders in frame.
+2. **It watches the angle, not you.** A few times a minute it takes a frame
+   from the camera, asks Apple's Vision framework for body landmarks, and
+   compares them to your baseline. The frame is discarded on the spot; only
+   the numbers survive.
+3. **One nudge.** Drift past your tolerance for long enough and you get a
+   single notification, replaced rather than stacked if you stay folded over,
+   and withdrawn the moment you sit back.
 
-## The app
+Almost all of it lives in the menu bar. Behind it there is a dashboard window
+with three pages: the live camera view with the verdict, this session's
+stats, and settings.
 
-Vision framework pose landmarks, sampled a few frames a minute and compared
-against a baseline you calibrate once. Ships without the network entitlement, so
-it is incapable of phoning home — the OS enforces the privacy claim.
+## Private by construction
 
-```bash
-cd app
-./build.sh --run    # test, build, bundle, ad-hoc sign, launch
-swift test          # the core rules, no camera required
-```
+- **No network entitlement.** The sandbox grants the camera and nothing else.
+  The app cannot open a socket even if a future version tried to, so the
+  privacy claim is enforced by macOS, not promised by a policy.
+- **The camera light is honest.** Solid green while monitoring, off while
+  paused. The light maps one-to-one onto what the app is doing.
+- **Nothing is stored.** No history, no photos, no analytics. Quit the app
+  and the session's numbers are gone.
 
-Architecture, design decisions and the core/shell boundary are documented in
+## How the app is put together
+
+The Swift package has two layers with a hard boundary between them:
+
+- **`PostureCore`** holds every rule and decision: what a reading is, how far
+  you have drifted from your baseline, when a slouch has lasted long enough
+  to deserve a banner. It imports Foundation only, so "two minutes of
+  slouching" can be tested in microseconds with a fake camera and a fake
+  clock.
+- **`PostureApp`** is the macOS shell: AVFoundation for the camera, Vision
+  for the landmarks, UserNotifications for the nudge, AppKit and SwiftUI for
+  the menu bar and the dashboard. It implements the small set of protocols
+  the core declares, and `main.swift` is the one place that wires the two
+  together.
+
+The full tour, including the decisions worth arguing about, is in
 [`app/README.md`](app/README.md).
 
-## The site
+## Building it
 
-Astro 7, no UI framework, no CSS framework — plain scoped styles and custom
-properties. It builds to fully static HTML.
+Needs a Mac with Xcode 15 or later.
 
-```bash
-npm install
-npm run dev      # http://localhost:4321
-npm run build    # → dist/
+```sh
+cd app
+./build.sh --run    # test, build, bundle, sign, launch
+swift test          # just the rules, no camera required
 ```
 
-### TypeScript 7, side by side with 6
+## The repository
 
-TypeScript is installed twice, using the aliases the TypeScript 7 release notes
-recommend:
-
-```json
-"@typescript/native": "npm:typescript@^7.0.2",
-"typescript":         "npm:@typescript/typescript6@^6.0.2"
 ```
-
-The native 7.x compiler is what `npx tsc` runs, and `npm run typecheck` uses it
-for the `.ts` sources. The bare `typescript` specifier resolves to the 6.0
-compatibility package, because `astro check`, `typescript-eslint` and Prettier
-all still call the TypeScript 6 programmatic API — the native compiler does not
-expose it yet. Drop the second alias and all three break at once.
-
-`npm run check` typechecks `.astro` files through that TS 6 API; `npm run
-typecheck` runs the native 7 compiler over the rest.
-
-### Checks
-
-```bash
-npm run format:check
-npm run lint
-npm run check       # .astro, via TS 6 API
-npm run typecheck   # .ts, native TS 7
+app/   the Mac app (Swift Package, no Xcode project)
+src/   the website, posture.miskoune.com
 ```
-
-All four gate every deploy.
-
-## Releases
-
-Commits follow [Conventional Commits](https://www.conventionalcommits.org)
-(enforced by commitlint via a husky hook). The scope decides what ships:
-
-- `feat(app): …` / `fix(app): …` — releases the Mac app. On push to `main`,
-  `.github/workflows/release.yml` runs semantic-release on a macOS runner:
-  it computes the next version from the commits, writes it into `Info.plist`,
-  builds, signs, notarizes and staples the DMG (`app/release.sh`), attaches it
-  to a GitHub Release (tag `posture-app-vX.Y.Z`), and pushes a
-  `chore: app version X.Y.Z` commit with the changelog.
-- Any other scope, or none — website work; never bumps the app.
-
-The site's download button points at `releases/latest/download/Posture.dmg`, a
-stable-name copy attached to every release, so shipping the app never requires
-touching the site.
-
-`app/release.sh` also runs locally if you have the Developer ID certificate and
-notarization credentials in your keychain — see the comment at the top of the
-script. CI needs five repository secrets, listed in
-`.github/workflows/release.yml`.
-
-## Deploying the site
-
-Pushing to `main` builds the site and rsyncs `dist/` to the server as an atomic
-release (`.github/workflows/deploy.yml`). App-only pushes — including the
-version-bump commit the release workflow pushes back — skip the deploy via
-`paths-ignore`.
 
 ## Licence
 
